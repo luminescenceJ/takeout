@@ -1,0 +1,8 @@
+server:
+  port: 8080
+  # debug | release | test 运行环境
+  level: debug
+
+log:
+  level: debug
+  filepath: ./logger/systemLog.txt
