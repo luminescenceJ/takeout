@@ -28,3 +28,45 @@ Domain Object： 领域对象，通常用于表示业务领域中的实体或业
 
 管理端发出的请求，统一使用/admin作为前缀
 用户端发出的请求，统一使用/user作为前缀
+
+## 项目难点
+### SwaggerGo 的使用
+swagger是一套基于OpenAPI规范构建的开源工具，使用RestApi，但是在golang生态中仍然使用的是1.6版本。相比于Spring中的3.0版本要维护的更慢
+因此对于项目的兼容性是一个需要考虑的难题，这体现在接口文档注释中的各项注解
+```go
+// @AddEmployee 注册员工接口
+// @Security JWTAuth
+// @Tags Employee
+// @Produce json
+// @Param data body request.EmployeeDTO true "新增员工信息"
+// @Success 200 {object} common.Result{} "success"
+// @Router /admin/employee/ [post]
+func (ec *EmployeeController) AddEmployee(ctx *gin.Context) {
+        var (
+                code     = e.SUCCESS
+                err      error
+                employee request.EmployeeDTO
+        )
+        err = ctx.ShouldBindWith(&employee, binding.JSON)
+        if err != nil {
+                global.Log.Debug("AddEmployee Error:", err.Error())
+                return
+        }
+
+	err = ec.service.CreateEmployee(ctx, employee)
+	if err != nil {
+		code = e.ERROR
+		global.Log.Warn("AddEmployee  Error:", err.Error())
+		ctx.JSON(http.StatusOK, common.Result{
+			Code: code,
+			Msg:  err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, common.Result{
+		Code: code,
+	})
+}
+```
+错误的参数名称如`Param`和`Params`会导致swagger识别不出来
+而Http请求的头部Token的设置对于接口调试也很重要，设置统一Token需要参考https://github.com/swaggo/gin-swagger/issues/90

@@ -12,6 +12,9 @@ func GlobalInit() *gin.Engine {
 	global.Config = config.InitLoadConfig()
 	// Log初始化
 	global.Log = logger.NewLogger(global.Config.Log.Level, global.Config.Log.FilePath)
+	// Gorm初始化
+	global.DB = InitDatabase(global.Config.DataSource.Dsn())
+
 	// Router初始化
 	router := routerInit()
 	return router

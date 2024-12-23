@@ -1,0 +1,144 @@
+basePath: /
+definitions:
+  common.Result:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+  request.EmployeeDTO:
+    properties:
+      id:
+        description: 员工id
+        type: integer
+      idNumber:
+        description: 身份证
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      sex:
+        description: 性别
+        type: string
+      username:
+        description: 用户名
+        type: string
+    required:
+    - idNumber
+    - name
+    - phone
+    - sex
+    - username
+    type: object
+  request.EmployeeLogin:
+    properties:
+      password:
+        example: "123456"
+        type: string
+      username:
+        example: admin
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  response.EmployeeLogin:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      token:
+        type: string
+      userName:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /admin/employee/:
+    post:
+      parameters:
+      - description: 新增员工信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.EmployeeDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - Employee
+  /admin/employee/login:
+    post:
+      parameters:
+      - description: 员工登录信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.EmployeeLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.EmployeeLogin'
+              type: object
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/common.Result'
+        "401":
+          description: wrong password or error on json web token generate
+          schema:
+            $ref: '#/definitions/common.Result'
+      tags:
+      - Employee
+  /admin/employee/logout:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - Employee
+securityDefinitions:
+  JWTAuth:
+    in: header
+    name: token
+    type: apiKey
+swagger: "2.0"

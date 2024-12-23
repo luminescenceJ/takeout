@@ -1,8 +1,8 @@
 package request
 
 type EmployeeLogin struct {
-	UserName string `json:"username" binding:"required" form:"username"`
-	Password string `json:"password"  binding:"required" form:"password"`
+	UserName string `json:"username" binding:"required" form:"username" example:"admin"`
+	Password string `json:"password"  binding:"required" form:"password" example:"123456"`
 }
 
 type EmployeeEditPassword struct {

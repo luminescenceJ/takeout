@@ -10,13 +10,26 @@ var envPtr = pflag.String("env", "dev", "Environment: dev or prod")
 
 // AllConfig 整合Config
 type AllConfig struct {
-	Server Server
-	//DataSource DataSource
+	Server     Server
+	DataSource DataSource
 	//Redis      Redis
 	Log Log
 	Jwt Jwt
 	//AliOss     AliOss
 	//Wechat     Wechat
+}
+
+type DataSource struct {
+	Host     string
+	Port     string
+	UserName string
+	Password string
+	DBName   string `mapstructure:"db_name"`
+	Config   string
+}
+
+func (d *DataSource) Dsn() string {
+	return d.UserName + ":" + d.Password + "@tcp(" + d.Host + ":" + d.Port + ")/" + d.DBName + "?" + d.Config
 }
 
 type Server struct {
