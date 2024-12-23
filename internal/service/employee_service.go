@@ -74,22 +74,19 @@ func (ei *EmployeeImpl) CreateEmployee(ctx context.Context, employee request.Emp
 }
 
 func (ei *EmployeeImpl) PageQuery(ctx context.Context, dto request.EmployeePageQueryDTO) (*common.PageResult, error) {
-	//// 分页查询
-	//pageResult, err := ei.repo.PageQuery(ctx, dto)
-	//// 屏蔽敏感信息
-	//if employees, ok := pageResult.Records.([]model.Employee); ok {
-	//	// 替换敏感信息
-	//	for key, _ := range employees {
-	//		employees[key].Password = "****"
-	//		employees[key].IdNumber = "****"
-	//		employees[key].Phone = "****"
-	//	}
-	//	// 重新赋值
-	//	pageResult.Records = employees
-	//}
-	//
-	//return pageResult, err
-	return nil, nil
+	// 分页查询
+	pageResult, err := ei.repo.PageQuery(ctx, dto)
+
+	// 屏蔽敏感信息
+	if employeeList, ok := pageResult.Records.([]model.Employee); ok {
+		for key, _ := range employeeList {
+			employeeList[key].Password = "****"
+			employeeList[key].IdNumber = "****"
+			employeeList[key].Phone = "****"
+		}
+		pageResult.Records = employeeList
+	}
+	return pageResult, err
 }
 
 type EmployeeImpl struct {

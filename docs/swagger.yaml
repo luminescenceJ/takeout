@@ -1,5 +1,13 @@
 basePath: /
 definitions:
+  common.PageResult:
+    properties:
+      records:
+        description: 当前页数据集合
+      total:
+        description: 总记录数
+        type: integer
+    type: object
   common.Result:
     properties:
       code:
@@ -88,6 +96,10 @@ paths:
           description: success
           schema:
             $ref: '#/definitions/common.Result'
+        "500":
+          description: Dupliciated Username
+          schema:
+            $ref: '#/definitions/common.Result'
       security:
       - JWTAuth: []
       tags:
@@ -130,6 +142,41 @@ paths:
       responses:
         "200":
           description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - Employee
+  /admin/employee/page/:
+    get:
+      parameters:
+      - description: 分页查询的name
+        in: query
+        name: name
+        type: string
+      - description: 分页查询的页数
+        in: query
+        name: page
+        type: integer
+      - description: 分页查询的页容量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/common.PageResult'
+              type: object
+        "501":
+          description: fail
           schema:
             $ref: '#/definitions/common.Result'
       security:

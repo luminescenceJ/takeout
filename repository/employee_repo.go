@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"takeout/common"
+	"takeout/internal/api/request"
 	"takeout/internal/model"
 )
 
@@ -14,8 +16,8 @@ type EmployeeRepo interface {
 	//Update(ctx context.Context, employee model.Employee) error
 	// Insert 插入员工数据
 	Insert(ctx context.Context, entity model.Employee) error
-	//// PageQuery 员工分页查询
-	//PageQuery(ctx context.Context, dto request.EmployeePageQueryDTO) (*common.PageResult, error)
+	// PageQuery 员工分页查询
+	PageQuery(ctx context.Context, dto request.EmployeePageQueryDTO) (*common.PageResult, error)
 	//// UpdateStatus 更新员工状态
 	//UpdateStatus(ctx context.Context, employee model.Employee) error
 }

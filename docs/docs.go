@@ -54,6 +54,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/common.Result"
                         }
+                    },
+                    "500": {
+                        "description": "Dupliciated Username",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
                     }
                 }
             }
@@ -133,9 +139,82 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/admin/employee/page/": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "分页查询的name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分页查询的页数",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分页查询的页容量",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/common.PageResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "501": {
+                        "description": "fail",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "common.PageResult": {
+            "type": "object",
+            "properties": {
+                "records": {
+                    "description": "当前页数据集合"
+                },
+                "total": {
+                    "description": "总记录数",
+                    "type": "integer"
+                }
+            }
+        },
         "common.Result": {
             "type": "object",
             "properties": {

@@ -121,25 +121,41 @@ func (ec *EmployeeController) AddEmployee(ctx *gin.Context) {
 // @Security JWTAuth
 // @Tags Employee
 // @Produce json
-// @Param data body request.EmployeePageQueryDTO true "查询员工请求信息"
-// @Success 200 {object} common.Result{data:common.PageResult} "success"
-// @Failure 400 {object} common.Result{} "fail"
-// @Router /admin/page/ [get]
+// @Param data query request.EmployeePageQueryDTO true "查询员工请求信息"
+// @Success 200 {object} common.Result{data=common.PageResult} "success"
+// @Failure 501 {object} common.Result{} "fail"
+// @Router /admin/employee/page/ [get]
 func (ec *EmployeeController) PageQuery(ctx *gin.Context) {
 	var (
 		code                 = e.SUCCESS
 		err                  error
 		employeePageQueryDTO request.EmployeePageQueryDTO
+		pageResult           *common.PageResult
 	)
-	err = ctx.ShouldBindWith(&employeePageQueryDTO, binding.JSON)
+	err = ctx.BindQuery(&employeePageQueryDTO)
 	if err != nil {
 		code = e.ERROR
 		global.Log.Error("AddEmployee  invalid params err:", err.Error())
-		e.Send(ctx, code)
+		ctx.JSON(http.StatusOK, common.Result{
+			Code: code,
+			Msg:  e.GetMsg(code),
+		})
 		return
 	}
-	//pageResult, err := ec.service.PageQuery(ctx, employeePageQueryDTO)
-
+	// 分页查询
+	pageResult, err = ec.service.PageQuery(ctx, employeePageQueryDTO)
+	if err != nil {
+		code = e.ERROR
+		global.Log.Warn("PageQuery  Error:", err.Error())
+		ctx.JSON(http.StatusNotImplemented, common.Result{
+			Code: code,
+			Msg:  err.Error(),
+		})
+	}
+	ctx.JSON(http.StatusOK, common.Result{
+		Code: code,
+		Data: pageResult,
+	})
 }
 
 func (ec *EmployeeController) GetById(ctx *gin.Context)        {}
