@@ -44,3 +44,18 @@ func (e *EmployeeDao) GetByUserName(ctx context.Context, userName string) (*mode
 	err := e.db.WithContext(ctx).Where("username=?", userName).First(&employee).Error
 	return &employee, err
 }
+
+func (e *EmployeeDao) GetById(ctx context.Context, id uint64) (*model.Employee, error) {
+	var employee model.Employee
+	err := e.db.WithContext(ctx).Where("id=?", id).First(&employee).Error
+	return &employee, err
+}
+
+func (e *EmployeeDao) UpdateStatus(ctx context.Context, employee model.Employee) error {
+	return e.db.WithContext(ctx).Model(&model.Employee{}).Where("id=?", employee.Id).Update("status", employee.Status).Error
+}
+
+func (e *EmployeeDao) Update(ctx context.Context, employee model.Employee) error {
+	err := e.db.WithContext(ctx).Model(&employee).Select("password").Updates(employee).Error
+	return err
+}

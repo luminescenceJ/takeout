@@ -43,6 +43,18 @@ definitions:
     - sex
     - username
     type: object
+  request.EmployeeEditPassword:
+    properties:
+      empId:
+        type: integer
+      newPassword:
+        type: string
+      oldPassword:
+        type: string
+    required:
+    - newPassword
+    - oldPassword
+    type: object
   request.EmployeeLogin:
     properties:
       password:
@@ -80,6 +92,34 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /admin/employee:
+    put:
+      parameters:
+      - description: 信息
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/request.EmployeeDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "400":
+          description: fail
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: fail
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - Employee
   /admin/employee/:
     post:
       parameters:
@@ -98,6 +138,57 @@ paths:
             $ref: '#/definitions/common.Result'
         "500":
           description: Dupliciated Username
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - Employee
+  /admin/employee/{id}:
+    get:
+      parameters:
+      - description: 员工id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "400":
+          description: fail
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - Employee
+  /admin/employee/editPassword:
+    put:
+      parameters:
+      - description: id和新旧密码
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/request.EmployeeEditPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "400":
+          description: fail
+          schema:
+            $ref: '#/definitions/common.Result'
+        "406":
+          description: fail
           schema:
             $ref: '#/definitions/common.Result'
       security:
@@ -175,6 +266,34 @@ paths:
                 data:
                   $ref: '#/definitions/common.PageResult'
               type: object
+        "501":
+          description: fail
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - Employee
+  /admin/employee/status/{status}:
+    post:
+      parameters:
+      - description: 员工状态
+        in: path
+        name: status
+        required: true
+        type: string
+      - description: 查询员工请求信息
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
         "501":
           description: fail
           schema:

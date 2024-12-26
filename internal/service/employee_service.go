@@ -16,12 +16,18 @@ import (
 type IEmployeeService interface {
 	Login(context.Context, request.EmployeeLogin) (*response.EmployeeLogin, error)
 	Logout(ctx context.Context) error
-	//EditPassword(context.Context, request.EmployeeEditPassword) error
+	EditPassword(context.Context, request.EmployeeEditPassword) error
 	CreateEmployee(ctx context.Context, employee request.EmployeeDTO) error
 	PageQuery(ctx context.Context, dto request.EmployeePageQueryDTO) (*common.PageResult, error)
-	//SetStatus(ctx context.Context, id uint64, status int) error
-	//UpdateEmployee(ctx context.Context, dto request.EmployeeDTO) error
-	//GetById(ctx context.Context, id uint64) (model.Employee, error)
+	SetStatus(ctx context.Context, id uint64, status int) error
+	UpdateEmployee(ctx context.Context, dto request.EmployeeDTO) error
+	GetById(ctx context.Context, id uint64) (model.Employee, error)
+}
+
+func (ei *EmployeeImpl) GetById(ctx context.Context, id uint64) (model.Employee, error) {
+	employee, err := ei.repo.GetById(ctx, id)
+	employee.Password = "****"
+	return *employee, err
 }
 
 func (ei *EmployeeImpl) Login(ctx context.Context, employeeLogin request.EmployeeLogin) (*response.EmployeeLogin, error) {
@@ -87,6 +93,49 @@ func (ei *EmployeeImpl) PageQuery(ctx context.Context, dto request.EmployeePageQ
 		pageResult.Records = employeeList
 	}
 	return pageResult, err
+}
+
+func (ei *EmployeeImpl) SetStatus(ctx context.Context, id uint64, status int) error {
+
+	entity := model.Employee{
+		Id:     id,
+		Status: status,
+	}
+	err := ei.repo.UpdateStatus(ctx, entity)
+	return err
+}
+
+func (ei *EmployeeImpl) UpdateEmployee(ctx context.Context, dto request.EmployeeDTO) error {
+	entity := model.Employee{
+		Id:       dto.Id,
+		Username: dto.UserName,
+		Name:     dto.Name,
+		Phone:    dto.Phone,
+		Sex:      dto.Sex,
+		IdNumber: dto.IdNumber,
+	}
+	err := ei.repo.Update(ctx, entity)
+	return err
+}
+
+func (ei *EmployeeImpl) EditPassword(ctx context.Context, employeeEdit request.EmployeeEditPassword) error {
+	employee, err := ei.repo.GetById(ctx, employeeEdit.EmpId)
+	if err != nil {
+		return err
+	}
+	if employee == nil {
+		return e.Error_ACCOUNT_NOT_FOUND
+	}
+	oldPassword := utils.MD5V(employeeEdit.OldPassword, "", 0)
+	if oldPassword != employee.Password {
+		return e.Error_PASSWORD_ERROR
+	}
+	newPassword := utils.MD5V(employee.Password, "", 0)
+	err = ei.repo.Update(ctx, model.Employee{
+		Id:       employee.Id,
+		Password: newPassword,
+	})
+	return err
 }
 
 type EmployeeImpl struct {
