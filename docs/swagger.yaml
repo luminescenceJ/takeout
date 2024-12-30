@@ -16,6 +16,17 @@ definitions:
       msg:
         type: string
     type: object
+  request.CategoryDTO:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      sort:
+        type: string
+      type:
+        type: string
+    type: object
   request.EmployeeDTO:
     properties:
       id:
@@ -92,6 +103,28 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /admin/category:
+    post:
+      parameters:
+      - description: 新增分类信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CategoryDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/common.Result'
+      tags:
+      - Category
   /admin/employee:
     put:
       parameters:

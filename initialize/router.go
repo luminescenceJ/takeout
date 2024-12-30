@@ -17,6 +17,7 @@ func routerInit() *gin.Engine {
 	{
 		//employee 路由
 		allRouter.EmployeeRouter.InitApiRouter(admin)
+		allRouter.CategoryRouter.InitApiRouter(admin)
 	}
 	return r
 }
