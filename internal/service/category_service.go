@@ -27,7 +27,6 @@ func (c *CategoryImpl) AddCategory(ctx context.Context, dto request.CategoryDTO)
 	typeInStr, _ := strconv.Atoi(dto.Type)
 	sortInStr, _ := strconv.Atoi(dto.Sort)
 	return c.repo.Insert(ctx, model.Category{
-		Id:     dto.Id,
 		Type:   typeInStr,
 		Name:   dto.Name,
 		Sort:   sortInStr,

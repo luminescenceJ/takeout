@@ -20,6 +20,7 @@ func NewCategoryController(service service.ICategoryService) *CategoryController
 
 // @AddCategory 新增分类接口
 // @Tags Category
+// @Security JWTAuth
 // @Produce json
 // @Param data body request.CategoryDTO true "新增分类信息"
 // @Success 200 {object} common.Result "success"

@@ -15,7 +15,7 @@ type CategoryRouter struct {
 
 func (cr *CategoryRouter) InitApiRouter(router *gin.RouterGroup) {
 	// admin/category
-	privateRouter := router.Group("employee")
+	privateRouter := router.Group("category")
 	// 私有路由使用jwt验证
 	privateRouter.Use(middle.VerifiyJWTAdmin())
 	//依赖注入
