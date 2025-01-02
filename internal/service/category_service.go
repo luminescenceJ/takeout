@@ -35,23 +35,34 @@ func (c *CategoryImpl) AddCategory(ctx context.Context, dto request.CategoryDTO)
 }
 
 func (c *CategoryImpl) PageQuery(ctx context.Context, dto request.CategoryPageQueryDTO) (*common.PageResult, error) {
-	return nil, nil
+	return c.repo.PageQuery(ctx, dto)
 }
 
 func (c *CategoryImpl) List(ctx context.Context, cate int) ([]model.Category, error) {
-	return nil, nil
+
+	return c.repo.List(ctx, cate)
 }
 
 func (c *CategoryImpl) DeleteById(ctx context.Context, id uint64) error {
-	return nil
+	return c.repo.DeleteById(ctx, id)
 }
 
 func (c *CategoryImpl) Update(ctx context.Context, dto request.CategoryDTO) error {
-	return nil
+	sort, _ := strconv.Atoi(dto.Sort)
+	type_, _ := strconv.Atoi(dto.Type)
+	return c.repo.Update(ctx, model.Category{
+		Id:   dto.Id,
+		Name: dto.Name,
+		Sort: sort,
+		Type: type_,
+	})
 }
 
 func (c *CategoryImpl) SetStatus(ctx context.Context, id uint64, status int) error {
-	return nil
+	return c.repo.SetStatus(ctx, model.Category{
+		Id:     id,
+		Status: status,
+	})
 }
 
 func NewCategoryService(repo repository.CategoryRepo) ICategoryService {

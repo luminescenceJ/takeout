@@ -32,8 +32,7 @@ func PageVerify(page *int, pageSize *int) {
 
 func (p *PageResult) Paginate(page *int, pageSize *int) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		PageVerify(page, pageSize)
-		db.Offset(*pageSize * (*page - 1)).Limit(*pageSize)
-		return db
+		PageVerify(page, pageSize)                                 // 校验参数
+		return db.Offset(*pageSize * (*page - 1)).Limit(*pageSize) // 返回链式调用
 	}
 }
