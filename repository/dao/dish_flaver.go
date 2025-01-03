@@ -9,22 +9,21 @@ import (
 type DishFlavorDao struct {
 }
 
-func (d DishFlavorDao) InsertBatch(db *gorm.DB, flavor []model.DishFlavor) error {
+func (d DishFlavorDao) InsertBatch(transaction *gorm.DB, flavor []model.DishFlavor) error {
+	return transaction.Create(&flavor).Error
+}
+
+func (d DishFlavorDao) DeleteByDishId(transaction *gorm.DB, dishId uint64) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (d DishFlavorDao) DeleteByDishId(db *gorm.DB, dishId uint64) error {
+func (d DishFlavorDao) GetByDishId(transaction *gorm.DB, dishId uint64) ([]model.DishFlavor, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (d DishFlavorDao) GetByDishId(db *gorm.DB, dishId uint64) ([]model.DishFlavor, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (d DishFlavorDao) Update(db *gorm.DB, flavor model.DishFlavor) error {
+func (d DishFlavorDao) Update(transaction *gorm.DB, flavor model.DishFlavor) error {
 	//TODO implement me
 	panic("implement me")
 }

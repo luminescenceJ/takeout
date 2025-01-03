@@ -1,770 +1,770 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "description": "This is a sample server celler server.",
-        "title": "Swagger Example API",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
-        "version": "1.0"
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a sample server celler server.",
+    "title": "Swagger Example API",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "name": "API Support",
+      "url": "http://www.swagger.io/support",
+      "email": "support@swagger.io"
     },
-    "host": "localhost:8080",
-    "basePath": "/",
-    "paths": {
-        "/admin/category": {
-            "put": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Category"
-                ],
-                "parameters": [
-                    {
-                        "description": "编辑分类的内容",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CategoryDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "400": {
-                        "description": "invalid params failed",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "500": {
-                        "description": "deleteById failed",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Category"
-                ],
-                "parameters": [
-                    {
-                        "description": "新增分类信息",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CategoryDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request payload",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Category"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "分类id",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "500": {
-                        "description": "DeleteById failed",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/category/list": {
-            "get": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Category"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "查询信息",
-                        "name": "type",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/category/page": {
-            "get": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Category"
-                ],
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "分类类型：1为菜品分类，2为套餐分类",
-                        "name": "type",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "分页查询的name",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "分页查询的页数",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "分页查询的页容量",
-                        "name": "pageSize",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request payload",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "500": {
-                        "description": "PageQuery failed",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/category/status/{status}": {
-            "post": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Category"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "分类id",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "状态",
-                        "name": "status",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "500": {
-                        "description": "SetStatus failed",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/employee": {
-            "put": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Employee"
-                ],
-                "parameters": [
-                    {
-                        "description": "信息",
-                        "name": "employee",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.EmployeeDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "400": {
-                        "description": "fail",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "500": {
-                        "description": "fail",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/employee/": {
-            "post": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Employee"
-                ],
-                "parameters": [
-                    {
-                        "description": "新增员工信息",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.EmployeeDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "500": {
-                        "description": "Dupliciated Username",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/employee/editPassword": {
-            "put": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Employee"
-                ],
-                "parameters": [
-                    {
-                        "description": "id和新旧密码",
-                        "name": "employee",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.EmployeeEditPassword"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "400": {
-                        "description": "fail",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "406": {
-                        "description": "fail",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/employee/login": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Employee"
-                ],
-                "parameters": [
-                    {
-                        "description": "员工登录信息",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.EmployeeLogin"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/common.Result"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/response.EmployeeLogin"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request payload",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "401": {
-                        "description": "wrong password or error on json web token generate",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/employee/logout": {
-            "post": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Employee"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/employee/page/": {
-            "get": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Employee"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "分页查询的name",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "分页查询的页数",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "分页查询的页容量",
-                        "name": "pageSize",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/common.Result"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/common.PageResult"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "501": {
-                        "description": "fail",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/employee/status/{status}": {
-            "post": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Employee"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "员工状态",
-                        "name": "status",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "查询员工请求信息",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "501": {
-                        "description": "fail",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/employee/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Employee"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "员工id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    },
-                    "400": {
-                        "description": "fail",
-                        "schema": {
-                            "$ref": "#/definitions/common.Result"
-                        }
-                    }
-                }
-            }
-        }
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "definitions": {
-        "common.PageResult": {
-            "type": "object",
-            "properties": {
-                "records": {
-                    "description": "当前页数据集合"
-                },
-                "total": {
-                    "description": "总记录数",
-                    "type": "integer"
-                }
+    "version": "1.0"
+  },
+  "host": "localhost:8080",
+  "basePath": "/",
+  "paths": {
+    "/admin/category": {
+      "put": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Category"
+        ],
+        "parameters": [
+          {
+            "description": "编辑分类的内容",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/request.CategoryDTO"
             }
-        },
-        "common.Result": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {},
-                "msg": {
-                    "type": "string"
-                }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
             }
-        },
-        "request.CategoryDTO": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "sort": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
+          },
+          "400": {
+            "description": "invalid params failed",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
             }
-        },
-        "request.EmployeeDTO": {
-            "type": "object",
-            "required": [
-                "idNumber",
-                "name",
-                "phone",
-                "sex",
-                "username"
-            ],
-            "properties": {
-                "id": {
-                    "description": "员工id",
-                    "type": "integer"
-                },
-                "idNumber": {
-                    "description": "身份证",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "姓名",
-                    "type": "string"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string"
-                },
-                "sex": {
-                    "description": "性别",
-                    "type": "string"
-                },
-                "username": {
-                    "description": "用户名",
-                    "type": "string"
-                }
+          },
+          "500": {
+            "description": "deleteById failed",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
             }
-        },
-        "request.EmployeeEditPassword": {
-            "type": "object",
-            "required": [
-                "newPassword",
-                "oldPassword"
-            ],
-            "properties": {
-                "empId": {
-                    "type": "integer"
-                },
-                "newPassword": {
-                    "type": "string"
-                },
-                "oldPassword": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.EmployeeLogin": {
-            "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
-            "properties": {
-                "password": {
-                    "type": "string",
-                    "example": "123456"
-                },
-                "username": {
-                    "type": "string",
-                    "example": "admin"
-                }
-            }
-        },
-        "response.EmployeeLogin": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "token": {
-                    "type": "string"
-                },
-                "userName": {
-                    "type": "string"
-                }
-            }
+          }
         }
+      },
+      "post": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Category"
+        ],
+        "parameters": [
+          {
+            "description": "新增分类信息",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/request.CategoryDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Category"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "description": "分类id",
+            "name": "id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "500": {
+            "description": "DeleteById failed",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
+        }
+      }
     },
-    "securityDefinitions": {
-        "JWTAuth": {
-            "type": "apiKey",
-            "name": "token",
-            "in": "header"
+    "/admin/category/list": {
+      "get": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Category"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "description": "查询信息",
+            "name": "type",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
         }
+      }
+    },
+    "/admin/category/page": {
+      "get": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Category"
+        ],
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "分类类型：1为菜品分类，2为套餐分类",
+            "name": "type",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "分页查询的name",
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "分页查询的页数",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "分页查询的页容量",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "500": {
+            "description": "PageQuery failed",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
+        }
+      }
+    },
+    "/admin/category/status/{status}": {
+      "post": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Category"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "description": "分类id",
+            "name": "id",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "状态",
+            "name": "status",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "500": {
+            "description": "SetStatus failed",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
+        }
+      }
+    },
+    "/admin/employee": {
+      "put": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Employee"
+        ],
+        "parameters": [
+          {
+            "description": "信息",
+            "name": "employee",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/request.EmployeeDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "400": {
+            "description": "fail",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "500": {
+            "description": "fail",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
+        }
+      }
+    },
+    "/admin/employee/": {
+      "post": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Employee"
+        ],
+        "parameters": [
+          {
+            "description": "新增员工信息",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/request.EmployeeDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "500": {
+            "description": "Dupliciated Username",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
+        }
+      }
+    },
+    "/admin/employee/editPassword": {
+      "put": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Employee"
+        ],
+        "parameters": [
+          {
+            "description": "id和新旧密码",
+            "name": "employee",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/request.EmployeeEditPassword"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "400": {
+            "description": "fail",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "406": {
+            "description": "fail",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
+        }
+      }
+    },
+    "/admin/employee/login": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Employee"
+        ],
+        "parameters": [
+          {
+            "description": "员工登录信息",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/request.EmployeeLogin"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/common.Result"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/response.EmployeeLogin"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "401": {
+            "description": "wrong password or error on json web token generate",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
+        }
+      }
+    },
+    "/admin/employee/logout": {
+      "post": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Employee"
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
+        }
+      }
+    },
+    "/admin/employee/page/": {
+      "get": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Employee"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "description": "分页查询的name",
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "分页查询的页数",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "分页查询的页容量",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/common.Result"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/common.PageResult"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "501": {
+            "description": "fail",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
+        }
+      }
+    },
+    "/admin/employee/status/{status}": {
+      "post": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Employee"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "description": "员工状态",
+            "name": "status",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "查询员工请求信息",
+            "name": "id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "501": {
+            "description": "fail",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
+        }
+      }
+    },
+    "/admin/employee/{id}": {
+      "get": {
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Employee"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "description": "员工id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          },
+          "400": {
+            "description": "fail",
+            "schema": {
+              "$ref": "#/definitions/common.Result"
+            }
+          }
+        }
+      }
     }
+  },
+  "definitions": {
+    "common.PageResult": {
+      "type": "object",
+      "properties": {
+        "records": {
+          "description": "当前页数据集合"
+        },
+        "total": {
+          "description": "总记录数",
+          "type": "integer"
+        }
+      }
+    },
+    "common.Result": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "data": {},
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "request.CategoryDTO": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "request.EmployeeDTO": {
+      "type": "object",
+      "required": [
+        "idNumber",
+        "name",
+        "phone",
+        "sex",
+        "username"
+      ],
+      "properties": {
+        "id": {
+          "description": "员工id",
+          "type": "integer"
+        },
+        "idNumber": {
+          "description": "身份证",
+          "type": "string"
+        },
+        "name": {
+          "description": "姓名",
+          "type": "string"
+        },
+        "phone": {
+          "description": "手机号",
+          "type": "string"
+        },
+        "sex": {
+          "description": "性别",
+          "type": "string"
+        },
+        "username": {
+          "description": "用户名",
+          "type": "string"
+        }
+      }
+    },
+    "request.EmployeeEditPassword": {
+      "type": "object",
+      "required": [
+        "newPassword",
+        "oldPassword"
+      ],
+      "properties": {
+        "empId": {
+          "type": "integer"
+        },
+        "newPassword": {
+          "type": "string"
+        },
+        "oldPassword": {
+          "type": "string"
+        }
+      }
+    },
+    "request.EmployeeLogin": {
+      "type": "object",
+      "required": [
+        "password",
+        "username"
+      ],
+      "properties": {
+        "password": {
+          "type": "string",
+          "example": "123456"
+        },
+        "username": {
+          "type": "string",
+          "example": "admin"
+        }
+      }
+    },
+    "response.EmployeeLogin": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "userName": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "JWTAuth": {
+      "type": "apiKey",
+      "name": "token",
+      "in": "header"
+    }
+  }
 }

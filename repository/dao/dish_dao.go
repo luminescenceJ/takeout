@@ -14,13 +14,11 @@ type DishDao struct {
 }
 
 func (d DishDao) Transaction(ctx context.Context) *gorm.DB {
-	//TODO implement me
-	panic("implement me")
+	return d.db.WithContext(ctx).Begin()
 }
 
-func (d DishDao) Insert(db *gorm.DB, dish *model.Dish) error {
-	//TODO implement me
-	panic("implement me")
+func (d DishDao) Insert(transaction *gorm.DB, dish *model.Dish) error {
+	return transaction.Create(dish).Error
 }
 
 func (d DishDao) PageQuery(ctx context.Context, dto *request.DishPageQueryDTO) (*common.PageResult, error) {

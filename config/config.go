@@ -13,9 +13,10 @@ type AllConfig struct {
 	Server     Server
 	DataSource DataSource
 	//Redis      Redis
-	Log Log
-	Jwt Jwt
-	//AliOss     AliOss
+	Log    Log
+	Jwt    Jwt
+	AliOss AliOss
+	Path   string ``
 	//Wechat     Wechat
 }
 
@@ -51,6 +52,13 @@ type JwtOption struct {
 	Secret string
 	TTL    string
 	Name   string
+}
+
+type AliOss struct {
+	EndPoint        string
+	AccessKeyId     string `mapstructure:"access_key_id"`
+	AccessKeySecret string `mapstructure:"access_key_secret"`
+	BucketName      string `mapstructure:"bucket_name"`
 }
 
 func InitLoadConfig() *AllConfig {

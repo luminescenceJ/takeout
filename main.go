@@ -32,4 +32,5 @@ func main() {
 	gin.SetMode(global.Config.Server.Level)
 	fmt.Println("[SERVER] runs on http://localhost:8080")
 	router.Run(":8080")
+
 }

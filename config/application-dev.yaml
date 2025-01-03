@@ -3,6 +3,8 @@ server:
   # debug | release | test 运行环境
   level: debug
 
+path: D:\lumin\GO\Project\takeout
+
 datasource:
   host: 127.0.0.1
   port: 3306
@@ -30,3 +32,9 @@ jwt:
     ttl: 7200000
     # 设置前端传递过来的令牌名称
     name: Authorization
+
+alioss:
+  endpoint: oss-cn-beijing.aliyuncs.com
+  access_key_id: LTAI5tG76SY7EF5Cnwr9oYeM
+  access_key_secret: bRbpNl4E7iRIc3SURmuO4nHZFODPZW
+  bucket_name: asda1s3d2a1sd263asd1a3s654a65sd4a65

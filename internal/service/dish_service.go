@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"strconv"
 	"takeout/common"
 	"takeout/internal/api/request"
 	"takeout/internal/api/response"
+	"takeout/internal/model"
 	"takeout/repository"
 )
 
@@ -24,8 +26,33 @@ type DishServiceImpl struct {
 }
 
 func (d DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.DishDTO) error {
-	//TODO implement me
-	panic("implement me")
+	price, _ := strconv.ParseFloat(dto.Price, 64)
+	transaction := d.repo.Transaction(ctx)
+	defer func() {
+		if r := recover(); r != nil {
+			transaction.Rollback()
+		}
+	}()
+	dish := model.Dish{
+		Id:          0,
+		Name:        dto.Name,
+		CategoryId:  dto.CategoryId,
+		Price:       price,
+		Image:       dto.Image,
+		Description: dto.Description,
+		Status:      dto.Status,
+		Flavors:     dto.Flavors,
+	}
+	if err := d.repo.Insert(transaction, &dish); err != nil {
+		return err
+	}
+	for i := range dto.Flavors {
+		dto.Flavors[i].DishId = dish.Id
+	}
+	if err := d.dishFlavorRepo.InsertBatch(transaction, dto.Flavors); err != nil {
+		return err
+	}
+	return transaction.Commit().Error
 }
 
 func (d DishServiceImpl) PageQuery(ctx context.Context, dto *request.DishPageQueryDTO) (*common.PageResult, error) {

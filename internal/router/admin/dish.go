@@ -22,6 +22,7 @@ func (dr *DishRouter) InitApiRouter(parent *gin.RouterGroup) {
 	)
 	{
 		privateRouter.POST("", dishCtrl.AddDish)
+
 		privateRouter.GET("/page", dishCtrl.PageQuery)
 		privateRouter.GET("/:id", dishCtrl.GetById)
 		privateRouter.GET("/list", dishCtrl.List)
