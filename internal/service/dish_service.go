@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 	"takeout/common"
+	"takeout/common/enum"
 	"takeout/internal/api/request"
 	"takeout/internal/api/response"
 	"takeout/internal/model"
@@ -40,12 +41,12 @@ func (d DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.Dis
 		Price:       price,
 		Image:       dto.Image,
 		Description: dto.Description,
-		Status:      dto.Status,
-		Flavors:     dto.Flavors,
+		Status:      enum.ENABLE,
 	}
 	if err := d.repo.Insert(transaction, &dish); err != nil {
 		return err
 	}
+	// 外键设置
 	for i := range dto.Flavors {
 		dto.Flavors[i].DishId = dish.Id
 	}

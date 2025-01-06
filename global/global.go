@@ -10,5 +10,5 @@ var (
 	DB     *gorm.DB
 	Log    logger.ILog
 	Config *config.AllConfig
-	Path   string
+	Path   *config.Path
 )

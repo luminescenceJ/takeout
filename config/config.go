@@ -16,8 +16,13 @@ type AllConfig struct {
 	Log    Log
 	Jwt    Jwt
 	AliOss AliOss
-	Path   string ``
+	Path   Path
 	//Wechat     Wechat
+}
+
+type Path struct {
+	LocalPath string `mapstructure:"local_path"`
+	VisitPath string `mapstructure:"visit_path"`
 }
 
 type DataSource struct {

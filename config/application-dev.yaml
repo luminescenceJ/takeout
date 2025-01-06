@@ -3,7 +3,9 @@ server:
   # debug | release | test 运行环境
   level: debug
 
-path: D:\lumin\GO\Project\takeout
+path:
+  local_path: D:/lumin/GO/Project/takeout/static
+  visit_path: http://localhost:8080/static
 
 datasource:
   host: 127.0.0.1
