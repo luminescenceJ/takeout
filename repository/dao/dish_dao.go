@@ -22,33 +22,67 @@ func (d DishDao) Insert(transaction *gorm.DB, dish *model.Dish) error {
 }
 
 func (d DishDao) PageQuery(ctx context.Context, dto *request.DishPageQueryDTO) (*common.PageResult, error) {
-	//TODO implement me
-	panic("implement me")
+	var (
+		pageResult common.PageResult
+		records    []model.Dish
+		err        error
+	)
+
+	query := d.db.WithContext(ctx).Model(model.Dish{})
+
+	if err = query.Count(&pageResult.Total).Error; err != nil {
+		return nil, err
+	}
+
+	err = query.Scopes(pageResult.Paginate(&dto.Page, &dto.PageSize)).
+		Find(&records).
+		Order("creat at desc").
+		Error
+
+	pageResult.Records = records
+	return &pageResult, err
 }
 
 func (d DishDao) GetById(ctx context.Context, id uint64) (*model.Dish, error) {
-	//TODO implement me
-	panic("implement me")
+	var (
+		dish model.Dish
+		err  error
+	)
+	dish.Id = id
+	err = d.db.WithContext(ctx).Preload("Flavors").Find(&dish).Error
+	// // 逻辑外键 两次查询
+	//if err = d.db.WithContext(ctx).First(&dish).Error; err != nil {
+	//	return nil, err
+	//}
+	//err = d.db.WithContext(ctx).Where("dish_id = ?", dish.Id).Find(&dish.Flavors).Error
+	return &dish, err
 }
 
 func (d DishDao) List(ctx context.Context, categoryId uint64) ([]model.Dish, error) {
-	//TODO implement me
-	panic("implement me")
+	res := []model.Dish{}
+	err := d.db.WithContext(ctx).Where("category_id = ?", categoryId).Find(&res).Error
+	return res, err
 }
 
 func (d DishDao) OnOrClose(ctx context.Context, id uint64, status int) error {
-	//TODO implement me
-	panic("implement me")
+	return d.db.WithContext(ctx).Model(&model.Dish{}).Where("id = ?", id).Update("status", status).Error
 }
 
-func (d DishDao) Update(db *gorm.DB, dish model.Dish) error {
-	//TODO implement me
-	panic("implement me")
+func (d DishDao) Update(transaction *gorm.DB, dish model.Dish) error {
+	if err := transaction.Updates(&dish).Error; err != nil {
+		return err
+	}
+	// // 更新菜品的另一种方法 : 逐个更新 DishFlavor
+	//for _, flavor := range dish.Flavors {
+	//	if err := db.Updates(&flavor).Error; err != nil {
+	//		return err
+	//	}
+	//}
+	return nil
 }
 
-func (d DishDao) Delete(db *gorm.DB, id uint64) error {
-	//TODO implement me
-	panic("implement me")
+func (d DishDao) Delete(transaction *gorm.DB, id uint64) error {
+	return transaction.Model(&model.Dish{}).Where("id = ?", id).Delete(&model.Dish{}).Error
 }
 
 func NewDishRepo(db *gorm.DB) repository.DishRepo {

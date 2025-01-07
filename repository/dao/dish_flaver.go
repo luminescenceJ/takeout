@@ -14,18 +14,19 @@ func (d DishFlavorDao) InsertBatch(transaction *gorm.DB, flavor []model.DishFlav
 }
 
 func (d DishFlavorDao) DeleteByDishId(transaction *gorm.DB, dishId uint64) error {
-	//TODO implement me
-	panic("implement me")
+	return transaction.Where("dish_id = ?", dishId).Delete(&model.DishFlavor{}).Error
 }
 
 func (d DishFlavorDao) GetByDishId(transaction *gorm.DB, dishId uint64) ([]model.DishFlavor, error) {
-	//TODO implement me
-	panic("implement me")
+	var flavors []model.DishFlavor
+	if err := transaction.Where("dish_id = ?", dishId).Find(&flavors).Error; err != nil {
+		return nil, err
+	}
+	return flavors, nil
 }
 
 func (d DishFlavorDao) Update(transaction *gorm.DB, flavor model.DishFlavor) error {
-	//TODO implement me
-	panic("implement me")
+	return transaction.Model(&model.DishFlavor{Id: flavor.Id}).Updates(flavor).Error
 }
 
 // NewDishFlavorDao db 是上个事务创建出来的
