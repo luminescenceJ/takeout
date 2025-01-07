@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"takeout/common"
 	"takeout/internal/api/request"
+	"takeout/internal/api/response"
 	"takeout/internal/model"
 	"takeout/repository"
 )
@@ -24,22 +25,35 @@ func (d DishDao) Insert(transaction *gorm.DB, dish *model.Dish) error {
 func (d DishDao) PageQuery(ctx context.Context, dto *request.DishPageQueryDTO) (*common.PageResult, error) {
 	var (
 		pageResult common.PageResult
-		records    []model.Dish
+		dishList   []response.DishPageVo
 		err        error
 	)
 
 	query := d.db.WithContext(ctx).Model(model.Dish{})
 
+	if dto.Name != "" {
+		query = query.Where("dish.name LIKE ?", "%"+dto.Name+"%")
+	}
+	if dto.Status != "" {
+		query = query.Where("dish.status = ?", dto.Status)
+	}
+	if dto.CategoryId != "" {
+		query = query.Where("dish.category_id = ?", dto.CategoryId)
+	}
+
 	if err = query.Count(&pageResult.Total).Error; err != nil {
 		return nil, err
 	}
 
-	err = query.Scopes(pageResult.Paginate(&dto.Page, &dto.PageSize)).
-		Find(&records).
-		Order("creat at desc").
-		Error
+	// 3.通用分页查询
+	if err = query.Scopes(pageResult.Paginate(&dto.Page, &dto.PageSize)).
+		Select("dish.*,c.name as category_name").
+		Joins("LEFT OUTER JOIN category c ON c.id = dish.category_id").
+		Order("dish.create_time desc").Scan(&dishList).Error; err != nil {
+		return nil, err
+	}
 
-	pageResult.Records = records
+	pageResult.Records = dishList
 	return &pageResult, err
 }
 

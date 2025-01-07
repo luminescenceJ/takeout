@@ -65,7 +65,7 @@ func (c DishController) PageQuery(ctx *gin.Context) {
 		pageRES *common.PageResult
 	)
 
-	if err = ctx.Bind(&pageDTO); err != nil {
+	if err = ctx.ShouldBind(&pageDTO); err != nil {
 		global.Log.Debug("param DishPageQueryDTO failed")
 		ctx.JSON(http.StatusBadRequest, common.Result{})
 		return
