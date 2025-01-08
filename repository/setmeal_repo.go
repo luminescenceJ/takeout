@@ -2,16 +2,16 @@ package repository
 
 import (
 	"context"
+	"gorm.io/gorm"
 	"takeout/common"
-	"takeout/global/tx"
 	"takeout/internal/api/request"
 	"takeout/internal/model"
 )
 
 type SetMealRepo interface {
-	Transaction(ctx context.Context) tx.Transaction
-	Insert(db tx.Transaction, meal *model.SetMeal) error
+	Transaction(ctx context.Context) *gorm.DB
+	Insert(db *gorm.DB, meal *model.SetMeal) error
 	PageQuery(ctx context.Context, dto request.SetMealPageQueryDTO) (*common.PageResult, error)
 	SetStatus(ctx context.Context, id uint64, status int) error
-	GetByIdWithDish(db tx.Transaction, dishId uint64) (model.SetMeal, error)
+	GetByIdWithDish(db *gorm.DB, dishId uint64) (model.SetMeal, error)
 }

@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"takeout/global/tx"
+	"gorm.io/gorm"
 	"takeout/internal/model"
 	"takeout/repository"
 )
@@ -9,14 +9,14 @@ import (
 type SetMealDishDao struct {
 }
 
-func (s SetMealDishDao) InsertBatch(db tx.Transaction, setmealDishs []model.SetMealDish) error {
-	//TODO implement me
-	panic("implement me")
+func (s SetMealDishDao) InsertBatch(transaction *gorm.DB, setmealDishs []model.SetMealDish) error {
+	return transaction.Create(&setmealDishs).Error
 }
 
-func (s SetMealDishDao) GetBySetMealId(db tx.Transaction, SetMealId uint64) ([]model.SetMealDish, error) {
-	//TODO implement me
-	panic("implement me")
+func (s SetMealDishDao) GetBySetMealId(transaction *gorm.DB, SetMealId uint64) ([]model.SetMealDish, error) {
+	var setmealDishs []model.SetMealDish
+	err := transaction.Where("set_meal_id = ?", SetMealId).Find(&setmealDishs).Error
+	return setmealDishs, err
 }
 
 func NewSetMealDishDao() repository.SetMealDishRepo {

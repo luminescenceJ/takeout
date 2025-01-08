@@ -28,13 +28,20 @@ type DishServiceImpl struct {
 }
 
 func (d DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.DishDTO) error {
+	var err error
 	price, _ := strconv.ParseFloat(dto.Price, 64)
+
 	transaction := d.repo.Transaction(ctx)
 	defer func() {
 		if r := recover(); r != nil {
+			// 发生 panic 时回滚事务
+			transaction.Rollback()
+		} else if err != nil {
+			// 发生错误时回滚事务
 			transaction.Rollback()
 		}
 	}()
+
 	dish := model.Dish{
 		Id:          0,
 		Name:        dto.Name,
@@ -44,17 +51,23 @@ func (d DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.Dis
 		Description: dto.Description,
 		Status:      enum.ENABLE,
 	}
-	if err := d.repo.Insert(transaction, &dish); err != nil {
+	if err = d.repo.Insert(transaction, &dish); err != nil {
 		return err
 	}
+
 	// 外键设置
 	for i := range dto.Flavors {
 		dto.Flavors[i].DishId = dish.Id
 	}
-	if err := d.dishFlavorRepo.InsertBatch(transaction, dto.Flavors); err != nil {
+	if err = d.dishFlavorRepo.InsertBatch(transaction, dto.Flavors); err != nil {
 		return err
 	}
-	return transaction.Commit().Error
+
+	// 最终返回时，提交事务，若提交失败，返回错误
+	if err = transaction.Commit().Error; err != nil {
+		return err // 这里会直接返回错误，defer 中的回滚会执行一次
+	}
+	return nil
 }
 
 func (d DishServiceImpl) PageQuery(ctx context.Context, dto *request.DishPageQueryDTO) (*common.PageResult, error) {
@@ -135,6 +148,10 @@ func (d DishServiceImpl) Update(ctx context.Context, dto request.DishUpdateDTO) 
 	transaction := d.repo.Transaction(ctx)
 	defer func() {
 		if r := recover(); r != nil {
+			// 发生 panic 时回滚事务
+			transaction.Rollback()
+		} else if err != nil {
+			// 发生错误时回滚事务
 			transaction.Rollback()
 		}
 	}()
@@ -152,10 +169,15 @@ func (d DishServiceImpl) Update(ctx context.Context, dto request.DishUpdateDTO) 
 			return err
 		}
 	}
-	return transaction.Commit().Error
+
+	if err = transaction.Commit().Error; err != nil {
+		return err // 这里会直接返回错误，defer 中的回滚会执行一次
+	}
+	return nil
 }
 
 func (d *DishServiceImpl) Delete(ctx context.Context, ids string) error {
+	var err error
 	// 删除分两步， 删除菜品和删除关联的口味 (ids 为需要删除的菜品id集合，如"1,2,3")
 	idList := strings.Split(ids, ",")
 	for _, idStr := range idList {
@@ -165,22 +187,22 @@ func (d *DishServiceImpl) Delete(ctx context.Context, ids string) error {
 		defer func() {
 			if r := recover(); r != nil {
 				transaction.Rollback()
+			} else if err != nil {
+				transaction.Rollback()
 			}
 		}()
 		// 删除菜品的口味数据
-		err := d.dishFlavorRepo.DeleteByDishId(transaction, dishId)
+		err = d.dishFlavorRepo.DeleteByDishId(transaction, dishId)
 		if err != nil {
-			transaction.Rollback() // 在出错时及时回滚
 			return err
 		}
 		// 删除菜品
 		err = d.repo.Delete(transaction, dishId)
 		if err != nil {
-			transaction.Rollback() // 在出错时及时回滚
 			return err
 		}
 		// 提交事务
-		if err := transaction.Commit().Error; err != nil {
+		if err = transaction.Commit().Error; err != nil {
 			return err
 		}
 	}
