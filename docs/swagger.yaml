@@ -12,7 +12,7 @@ definitions:
     properties:
       code:
         type: integer
-      data: { }
+      data: {}
       msg:
         type: string
     type: object
@@ -31,6 +31,27 @@ definitions:
         description: 口味信息 可多个
         type: string
     type: object
+  model.SetMealDish:
+    properties:
+      copies:
+        description: 菜品数量冗余字段
+        type: integer
+      dishId:
+        description: 菜品id
+        type: integer
+      id:
+        description: 中间表id
+        type: integer
+      name:
+        description: 菜品名称冗余字段
+        type: string
+      price:
+        description: 菜品单价冗余字段
+        type: number
+      setmealId:
+        description: 套餐id
+        type: integer
+    type: object
   request.CategoryDTO:
     properties:
       id:
@@ -43,6 +64,45 @@ definitions:
         type: string
     type: object
   request.DishDTO:
+    properties:
+      categoryId:
+        type: integer
+      description:
+        type: string
+      flavors:
+        items:
+          $ref: '#/definitions/model.DishFlavor'
+        type: array
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      price:
+        type: string
+      status:
+        type: integer
+    type: object
+  request.DishPageQueryDTO:
+    properties:
+      categoryId:
+        description: '分类ID:'
+        type: string
+      name:
+        description: 分页查询的name
+        type: string
+      page:
+        description: 分页查询的页数
+        type: integer
+      pageSize:
+        description: 分页查询的页容量
+        type: integer
+      status:
+        description: 菜品状态
+        type: string
+    type: object
+  request.DishUpdateDTO:
     properties:
       categoryId:
         type: integer
@@ -84,11 +144,11 @@ definitions:
         description: 用户名
         type: string
     required:
-      - idNumber
-      - name
-      - phone
-      - sex
-      - username
+    - idNumber
+    - name
+    - phone
+    - sex
+    - username
     type: object
   request.EmployeeEditPassword:
     properties:
@@ -99,8 +159,8 @@ definitions:
       oldPassword:
         type: string
     required:
-      - newPassword
-      - oldPassword
+    - newPassword
+    - oldPassword
     type: object
   request.EmployeeLogin:
     properties:
@@ -111,8 +171,80 @@ definitions:
         example: admin
         type: string
     required:
-      - password
-      - username
+    - password
+    - username
+    type: object
+  request.SetMealDTO:
+    properties:
+      categoryId:
+        description: 分类id
+        type: integer
+      description:
+        description: 套餐描述
+        type: string
+      id:
+        description: 主键id
+        type: integer
+      image:
+        description: 套餐图片
+        type: string
+      name:
+        description: 套餐名称
+        type: string
+      price:
+        description: 套餐单价 前端存在bug，有时候发送string类型有时候是number类型
+        type: number
+      setmealDishes:
+        description: 套餐菜品关系
+        items:
+          $ref: '#/definitions/model.SetMealDish'
+        type: array
+      status:
+        description: 套餐状态
+        type: integer
+    type: object
+  request.SetMealPageQueryDTO:
+    properties:
+      categoryId:
+        description: '分类ID:'
+        type: integer
+      name:
+        description: 分页查询的name
+        type: string
+      page:
+        description: 分页查询的页数
+        type: integer
+      pageSize:
+        description: 分页查询的页容量
+        type: integer
+      status:
+        description: 套餐起售状态
+        type: string
+    type: object
+  response.DishListVo:
+    properties:
+      categoryId:
+        type: integer
+      createTime:
+        type: string
+      createUser:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      status:
+        type: integer
+      updateTime:
+        type: string
+      updateUser:
+        type: integer
     type: object
   response.EmployeeLogin:
     properties:
@@ -124,6 +256,45 @@ definitions:
         type: string
       userName:
         type: string
+    type: object
+  response.SetMealPageQueryVo:
+    properties:
+      categoryId:
+        description: 分类id
+        type: integer
+      categoryName:
+        description: 分类名称
+        type: string
+      createTime:
+        description: 创建时间
+        type: string
+      createUser:
+        description: 创建用户
+        type: integer
+      description:
+        description: 套餐描述
+        type: string
+      id:
+        description: 主键id
+        type: integer
+      image:
+        description: 套餐图片
+        type: string
+      name:
+        description: 套餐名称
+        type: string
+      price:
+        description: 套餐单价
+        type: number
+      status:
+        description: 套餐状态
+        type: integer
+      updateTime:
+        description: 更新时间
+        type: string
+      updateUser:
+        description: 更新用户
+        type: integer
     type: object
 host: localhost:8080
 info:
@@ -142,13 +313,13 @@ paths:
   /admin/category:
     delete:
       parameters:
-        - description: 分类id
-          in: query
-          name: id
-          required: true
-          type: string
+      - description: 分类id
+        in: query
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
@@ -159,19 +330,19 @@ paths:
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Category
+      - Category
     post:
       parameters:
-        - description: 新增分类信息
-          in: body
-          name: data
-          required: true
-          schema:
-            $ref: '#/definitions/request.CategoryDTO'
+      - description: 新增分类信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CategoryDTO'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
@@ -182,19 +353,19 @@ paths:
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Category
+      - Category
     put:
       parameters:
-        - description: 编辑分类的内容
-          in: body
-          name: data
-          required: true
-          schema:
-            $ref: '#/definitions/request.CategoryDTO'
+      - description: 编辑分类的内容
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CategoryDTO'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
@@ -209,49 +380,49 @@ paths:
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Category
+      - Category
   /admin/category/list:
     get:
       parameters:
-        - description: 查询信息
-          in: query
-          name: type
-          required: true
-          type: string
+      - description: 查询信息
+        in: query
+        name: type
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Category
+      - Category
   /admin/category/page:
     get:
       parameters:
-        - description: 分类类型：1为菜品分类，2为套餐分类
-          in: query
-          name: type
-          type: integer
-        - description: 分页查询的name
-          in: query
-          name: name
-          type: string
-        - description: 分页查询的页数
-          in: query
-          name: page
-          type: integer
-        - description: 分页查询的页容量
-          in: query
-          name: pageSize
-          type: integer
+      - description: 分类类型：1为菜品分类，2为套餐分类
+        in: query
+        name: type
+        type: integer
+      - description: 分页查询的name
+        in: query
+        name: name
+        type: string
+      - description: 分页查询的页数
+        in: query
+        name: page
+        type: integer
+      - description: 分页查询的页容量
+        in: query
+        name: pageSize
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
@@ -266,24 +437,24 @@ paths:
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Category
+      - Category
   /admin/category/status/{status}:
     post:
       parameters:
-        - description: 分类id
-          in: query
-          name: id
-          required: true
-          type: string
-        - description: 状态
-          in: path
-          name: status
-          required: true
-          type: string
+      - description: 分类id
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: 状态
+        in: path
+        name: status
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
@@ -294,65 +465,87 @@ paths:
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Category
+      - Category
   /admin/common/upload:
     post:
       consumes:
-        - multipart/form-data
+      - multipart/form-data
       description: 接收一个文件，并将其上传到本地存储或云存储（如阿里云OSS）
       parameters:
-        - description: 文件
-          in: formData
-          name: file
-          required: true
-          type: file
+      - description: 文件
+        in: formData
+        name: file
+        required: true
+        type: file
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 上传成功
           schema:
             allOf:
-              - $ref: '#/definitions/common.Result'
-              - properties:
-                  ' data':
-                    type: string
-                  ' msg':
-                    type: string
-                  code:
-                    type: integer
-                type: object
+            - $ref: '#/definitions/common.Result'
+            - properties:
+                ' data':
+                  type: string
+                ' msg':
+                  type: string
+                code:
+                  type: integer
+              type: object
         "400":
           description: 上传失败
           schema:
             allOf:
-              - $ref: '#/definitions/common.Result'
-              - properties:
-                  ' data':
-                    type: string
-                  ' msg':
-                    type: string
-                  code:
-                    type: integer
-                type: object
+            - $ref: '#/definitions/common.Result'
+            - properties:
+                ' data':
+                  type: string
+                ' msg':
+                  type: string
+                code:
+                  type: integer
+              type: object
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       summary: 上传文件到服务器
       tags:
-        - FileUpload
+      - FileUpload
   /admin/dish:
+    delete:
+      parameters:
+      - description: 删除id集合
+        in: query
+        name: ids
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: Internal Server Faliure
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - dish
     post:
       parameters:
-        - description: 新增信息
-          in: body
-          name: data
-          required: true
-          schema:
-            $ref: '#/definitions/request.DishDTO'
+      - description: 新增信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.DishDTO'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
@@ -367,20 +560,163 @@ paths:
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - dish
+      - dish
+    put:
+      parameters:
+      - description: 修改菜品的信息
+        in: body
+        name: dto
+        required: true
+        schema:
+          $ref: '#/definitions/request.DishUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: Internal Server Faliure
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - dish
+  /admin/dish/{id}:
+    get:
+      parameters:
+      - description: 菜品id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: Internal Server Faliure
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - dish
+  /admin/dish/list:
+    get:
+      parameters:
+      - description: 分类id
+        in: query
+        name: categoryId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.Result'
+            - properties:
+                Data:
+                  $ref: '#/definitions/response.DishListVo'
+              type: object
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: Internal Server Faliure
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - dish
+  /admin/dish/page:
+    get:
+      parameters:
+      - description: 新增信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.DishPageQueryDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.Result'
+            - properties:
+                Data:
+                  $ref: '#/definitions/common.PageResult'
+              type: object
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: Internal Server Faliure
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - dish
+  /admin/dish/status/{status}:
+    post:
+      parameters:
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: status
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: Internal Server Faliure
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - dish
   /admin/employee:
     put:
       parameters:
-        - description: 信息
-          in: body
-          name: employee
-          required: true
-          schema:
-            $ref: '#/definitions/request.EmployeeDTO'
+      - description: 信息
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/request.EmployeeDTO'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
@@ -395,20 +731,20 @@ paths:
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Employee
+      - Employee
   /admin/employee/:
     post:
       parameters:
-        - description: 新增员工信息
-          in: body
-          name: data
-          required: true
-          schema:
-            $ref: '#/definitions/request.EmployeeDTO'
+      - description: 新增员工信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.EmployeeDTO'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
@@ -419,19 +755,19 @@ paths:
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Employee
+      - Employee
   /admin/employee/{id}:
     get:
       parameters:
-        - description: 员工id
-          in: path
-          name: id
-          required: true
-          type: string
+      - description: 员工id
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
@@ -442,20 +778,20 @@ paths:
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Employee
+      - Employee
   /admin/employee/editPassword:
     put:
       parameters:
-        - description: id和新旧密码
-          in: body
-          name: employee
-          required: true
-          schema:
-            $ref: '#/definitions/request.EmployeeEditPassword'
+      - description: id和新旧密码
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/request.EmployeeEditPassword'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
@@ -470,30 +806,30 @@ paths:
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Employee
+      - Employee
   /admin/employee/login:
     post:
       parameters:
-        - description: 员工登录信息
-          in: body
-          name: data
-          required: true
-          schema:
-            $ref: '#/definitions/request.EmployeeLogin'
+      - description: 员工登录信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.EmployeeLogin'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
           schema:
             allOf:
-              - $ref: '#/definitions/common.Result'
-              - properties:
-                  data:
-                    $ref: '#/definitions/response.EmployeeLogin'
-                type: object
+            - $ref: '#/definitions/common.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.EmployeeLogin'
+              type: object
         "400":
           description: Invalid request payload
           schema:
@@ -503,70 +839,70 @@ paths:
           schema:
             $ref: '#/definitions/common.Result'
       tags:
-        - Employee
+      - Employee
   /admin/employee/logout:
     post:
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Employee
+      - Employee
   /admin/employee/page/:
     get:
       parameters:
-        - description: 分页查询的name
-          in: query
-          name: name
-          type: string
-        - description: 分页查询的页数
-          in: query
-          name: page
-          type: integer
-        - description: 分页查询的页容量
-          in: query
-          name: pageSize
-          type: integer
+      - description: 分页查询的name
+        in: query
+        name: name
+        type: string
+      - description: 分页查询的页数
+        in: query
+        name: page
+        type: integer
+      - description: 分页查询的页容量
+        in: query
+        name: pageSize
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
           schema:
             allOf:
-              - $ref: '#/definitions/common.Result'
-              - properties:
-                  data:
-                    $ref: '#/definitions/common.PageResult'
-                type: object
+            - $ref: '#/definitions/common.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/common.PageResult'
+              type: object
         "501":
           description: fail
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Employee
+      - Employee
   /admin/employee/status/{status}:
     post:
       parameters:
-        - description: 员工状态
-          in: path
-          name: status
-          required: true
-          type: string
-        - description: 查询员工请求信息
-          in: query
-          name: id
-          required: true
-          type: string
+      - description: 员工状态
+        in: path
+        name: status
+        required: true
+        type: string
+      - description: 查询员工请求信息
+        in: query
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: success
@@ -577,9 +913,174 @@ paths:
           schema:
             $ref: '#/definitions/common.Result'
       security:
-        - JWTAuth: [ ]
+      - JWTAuth: []
       tags:
-        - Employee
+      - Employee
+  /admin/setmeal:
+    delete:
+      parameters:
+      - description: id集合
+        in: query
+        name: ids
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: Internal Server Faliure
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - setmeal
+    post:
+      parameters:
+      - description: 菜品信息
+        in: body
+        name: dto
+        required: true
+        schema:
+          $ref: '#/definitions/request.SetMealDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: Internal Server Faliure
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - setmeal
+    put:
+      parameters:
+      - description: 更新套餐和其关联菜品结构体
+        in: body
+        name: dto
+        required: true
+        schema:
+          $ref: '#/definitions/request.SetMealDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: Internal Server Faliure
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - setmeal
+  /admin/setmeal/{id}:
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: Internal Server Faliure
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - setmeal
+  /admin/setmeal/page:
+    get:
+      parameters:
+      - description: 分页查询dto
+        in: body
+        name: dto
+        required: true
+        schema:
+          $ref: '#/definitions/request.SetMealPageQueryDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.Result'
+            - properties:
+                Data:
+                  $ref: '#/definitions/response.SetMealPageQueryVo'
+              type: object
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: Internal Server Faliure
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - setmeal
+  /admin/setmeal/status/{status}:
+    post:
+      parameters:
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: status
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/common.Result'
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/common.Result'
+        "500":
+          description: Internal Server Faliure
+          schema:
+            $ref: '#/definitions/common.Result'
+      security:
+      - JWTAuth: []
+      tags:
+      - setmeal
 securityDefinitions:
   JWTAuth:
     in: header

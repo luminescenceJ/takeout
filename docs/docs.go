@@ -362,6 +362,50 @@ const docTemplate = `{
             }
         },
         "/admin/dish": {
+            "put": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "description": "修改菜品的信息",
+                        "name": "dto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DishUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -394,6 +438,239 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "删除id集合",
+                        "name": "ids",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/dish/list": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "分类id",
+                        "name": "categoryId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "$ref": "#/definitions/response.DishListVo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/dish/page": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "description": "新增信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DishPageQueryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "$ref": "#/definitions/common.PageResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/dish/status/{status}": {
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/dish/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "菜品id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
                         "schema": {
                             "$ref": "#/definitions/common.Result"
                         }
@@ -758,6 +1035,279 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/admin/setmeal": {
+            "put": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setmeal"
+                ],
+                "parameters": [
+                    {
+                        "description": "更新套餐和其关联菜品结构体",
+                        "name": "dto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SetMealDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setmeal"
+                ],
+                "parameters": [
+                    {
+                        "description": "菜品信息",
+                        "name": "dto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SetMealDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setmeal"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id集合",
+                        "name": "ids",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/setmeal/page": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setmeal"
+                ],
+                "parameters": [
+                    {
+                        "description": "分页查询dto",
+                        "name": "dto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SetMealPageQueryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "$ref": "#/definitions/response.SetMealPageQueryVo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/setmeal/status/{status}": {
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setmeal"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/setmeal/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setmeal"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -806,6 +1356,35 @@ const docTemplate = `{
                 }
             }
         },
+        "model.SetMealDish": {
+            "type": "object",
+            "properties": {
+                "copies": {
+                    "description": "菜品数量冗余字段",
+                    "type": "integer"
+                },
+                "dishId": {
+                    "description": "菜品id",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "中间表id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "菜品名称冗余字段",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "菜品单价冗余字段",
+                    "type": "number"
+                },
+                "setmealId": {
+                    "description": "套餐id",
+                    "type": "integer"
+                }
+            }
+        },
         "request.CategoryDTO": {
             "type": "object",
             "properties": {
@@ -824,6 +1403,63 @@ const docTemplate = `{
             }
         },
         "request.DishDTO": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "flavors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DishFlavor"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.DishPageQueryDTO": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "description": "分类ID:",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "分页查询的name",
+                    "type": "string"
+                },
+                "page": {
+                    "description": "分页查询的页数",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "分页查询的页容量",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "菜品状态",
+                    "type": "string"
+                }
+            }
+        },
+        "request.DishUpdateDTO": {
             "type": "object",
             "properties": {
                 "categoryId": {
@@ -926,6 +1562,109 @@ const docTemplate = `{
                 }
             }
         },
+        "request.SetMealDTO": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "description": "分类id",
+                    "type": "integer"
+                },
+                "description": {
+                    "description": "套餐描述",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "主键id",
+                    "type": "integer"
+                },
+                "image": {
+                    "description": "套餐图片",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "套餐名称",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "套餐单价 前端存在bug，有时候发送string类型有时候是number类型",
+                    "type": "number"
+                },
+                "setmealDishes": {
+                    "description": "套餐菜品关系",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SetMealDish"
+                    }
+                },
+                "status": {
+                    "description": "套餐状态",
+                    "type": "integer"
+                }
+            }
+        },
+        "request.SetMealPageQueryDTO": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "description": "分类ID:",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "分页查询的name",
+                    "type": "string"
+                },
+                "page": {
+                    "description": "分页查询的页数",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "分页查询的页容量",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "套餐起售状态",
+                    "type": "string"
+                }
+            }
+        },
+        "response.DishListVo": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "type": "integer"
+                },
+                "createTime": {
+                    "type": "string"
+                },
+                "createUser": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "type": "string"
+                },
+                "updateUser": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.EmployeeLogin": {
             "type": "object",
             "properties": {
@@ -940,6 +1679,59 @@ const docTemplate = `{
                 },
                 "userName": {
                     "type": "string"
+                }
+            }
+        },
+        "response.SetMealPageQueryVo": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "description": "分类id",
+                    "type": "integer"
+                },
+                "categoryName": {
+                    "description": "分类名称",
+                    "type": "string"
+                },
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建用户",
+                    "type": "integer"
+                },
+                "description": {
+                    "description": "套餐描述",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "主键id",
+                    "type": "integer"
+                },
+                "image": {
+                    "description": "套餐图片",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "套餐名称",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "套餐单价",
+                    "type": "number"
+                },
+                "status": {
+                    "description": "套餐状态",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新用户",
+                    "type": "integer"
                 }
             }
         }

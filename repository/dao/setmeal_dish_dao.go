@@ -9,6 +9,10 @@ import (
 type SetMealDishDao struct {
 }
 
+func (s SetMealDishDao) DeleteBySetMealId(transaction *gorm.DB, SetMealId uint64) error {
+	return transaction.Where("setmeal_id=?", SetMealId).Delete(&model.SetMealDish{}).Error
+}
+
 func (s SetMealDishDao) InsertBatch(transaction *gorm.DB, setmealDishs []model.SetMealDish) error {
 	return transaction.Create(&setmealDishs).Error
 }

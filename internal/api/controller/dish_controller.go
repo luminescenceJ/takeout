@@ -53,7 +53,7 @@ func (c DishController) AddDish(ctx *gin.Context) {
 // @Security JWTAuth
 // @Produce json
 // @Param data body request.DishPageQueryDTO true "新增信息"
-// @Success 200 {object} common.Result{data=common.PageResult} "success"
+// @Success 200 {object} common.Result{Data=common.PageResult} "success"
 // @Failure 400 {object} common.Result "Invalid request payload"
 // @Failure 500 {object} common.Result "Internal Server Faliure"
 // @Router /admin/dish/page [get]
@@ -120,7 +120,7 @@ func (c DishController) GetById(ctx *gin.Context) {
 // @Security JWTAuth
 // @Produce json
 // @Param categoryId query string true "分类id"
-// @Success 200 {object} common.Result{data:response.DishListVo} "success"
+// @Success 200 {object} common.Result{Data=response.DishListVo} "success"
 // @Failure 400 {object} common.Result "Invalid request payload"
 // @Failure 500 {object} common.Result "Internal Server Faliure"
 // @Router /admin/dish/list [get]
@@ -152,7 +152,7 @@ func (c DishController) List(ctx *gin.Context) {
 // @Tags dish
 // @Security JWTAuth
 // @Produce json
-// @Param dto body request.DishUpdateDTO true
+// @Param dto body request.DishUpdateDTO true "修改菜品的信息"
 // @Success 200 {object} common.Result{} "success"
 // @Failure 400 {object} common.Result "Invalid request payload"
 // @Failure 500 {object} common.Result "Internal Server Faliure"
@@ -189,8 +189,8 @@ func (c DishController) Update(ctx *gin.Context) {
 // @Tags dish
 // @Security JWTAuth
 // @Produce json
-// @Param id query string true
-// @Param status path string true
+// @Param id query string true "id"
+// @Param status path string true "status"
 // @Success 200 {object} common.Result{} "success"
 // @Failure 500 {object} common.Result "Internal Server Faliure"
 // @Router /admin/dish/status/{status} [post]
@@ -224,7 +224,7 @@ func (c DishController) OnOrClose(ctx *gin.Context) {
 // @Tags dish
 // @Security JWTAuth
 // @Produce json
-// @Param ids query string true
+// @Param ids query string true "删除id集合"
 // @Success 200 {object} common.Result{} "success"
 // @Failure 500 {object} common.Result "Internal Server Faliure"
 // @Router /admin/dish [delete]

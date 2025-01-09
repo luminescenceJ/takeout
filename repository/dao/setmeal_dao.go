@@ -14,6 +14,14 @@ type SetMealDao struct {
 	db *gorm.DB
 }
 
+func (s SetMealDao) Update(transaction *gorm.DB, meal *model.SetMeal) error {
+	return transaction.Updates(&meal).Error
+}
+
+func (s SetMealDao) Delete(transaction *gorm.DB, id uint64) error {
+	return transaction.Where("id = ?", id).Delete(&model.SetMeal{}).Error
+}
+
 func (s SetMealDao) Transaction(ctx context.Context) *gorm.DB {
 	var count int64
 	_ = s.db.WithContext(ctx).Model(&model.SetMeal{}).Count(&count).Error

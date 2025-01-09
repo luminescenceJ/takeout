@@ -1,948 +1,1740 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "description": "This is a sample server celler server.",
-    "title": "Swagger Example API",
-    "termsOfService": "http://swagger.io/terms/",
-    "contact": {
-      "name": "API Support",
-      "url": "http://www.swagger.io/support",
-      "email": "support@swagger.io"
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample server celler server.",
+        "title": "Swagger Example API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
     },
-    "license": {
-      "name": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-    },
-    "version": "1.0"
-  },
-  "host": "localhost:8080",
-  "basePath": "/",
-  "paths": {
-    "/admin/category": {
-      "put": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Category"
-        ],
-        "parameters": [
-          {
-            "description": "编辑分类的内容",
-            "name": "data",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/request.CategoryDTO"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "400": {
-            "description": "invalid params failed",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "500": {
-            "description": "deleteById failed",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      },
-      "post": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Category"
-        ],
-        "parameters": [
-          {
-            "description": "新增分类信息",
-            "name": "data",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/request.CategoryDTO"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "400": {
-            "description": "Invalid request payload",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      },
-      "delete": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Category"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "description": "分类id",
-            "name": "id",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "500": {
-            "description": "DeleteById failed",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      }
-    },
-    "/admin/category/list": {
-      "get": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Category"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "description": "查询信息",
-            "name": "type",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      }
-    },
-    "/admin/category/page": {
-      "get": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Category"
-        ],
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "分类类型：1为菜品分类，2为套餐分类",
-            "name": "type",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "分页查询的name",
-            "name": "name",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "description": "分页查询的页数",
-            "name": "page",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "description": "分页查询的页容量",
-            "name": "pageSize",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "400": {
-            "description": "Invalid request payload",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "500": {
-            "description": "PageQuery failed",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      }
-    },
-    "/admin/category/status/{status}": {
-      "post": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Category"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "description": "分类id",
-            "name": "id",
-            "in": "query",
-            "required": true
-          },
-          {
-            "type": "string",
-            "description": "状态",
-            "name": "status",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "500": {
-            "description": "SetStatus failed",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      }
-    },
-    "/admin/common/upload": {
-      "post": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "description": "接收一个文件，并将其上传到本地存储或云存储（如阿里云OSS）",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "FileUpload"
-        ],
-        "summary": "上传文件到服务器",
-        "parameters": [
-          {
-            "type": "file",
-            "description": "文件",
-            "name": "file",
-            "in": "formData",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "上传成功",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/common.Result"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    " data": {
-                      "type": "string"
-                    },
-                    " msg": {
-                      "type": "string"
-                    },
-                    "code": {
-                      "type": "integer"
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/admin/category": {
+            "put": {
+                "security": [
+                    {
+                        "JWTAuth": []
                     }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "上传失败",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/common.Result"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    " data": {
-                      "type": "string"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "parameters": [
+                    {
+                        "description": "编辑分类的内容",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CategoryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
                     },
-                    " msg": {
-                      "type": "string"
+                    "400": {
+                        "description": "invalid params failed",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
                     },
-                    "code": {
-                      "type": "integer"
+                    "500": {
+                        "description": "deleteById failed",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
                     }
-                  }
                 }
-              ]
+            },
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "parameters": [
+                    {
+                        "description": "新增分类信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CategoryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "分类id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "DeleteById failed",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
             }
-          }
+        },
+        "/admin/category/list": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "查询信息",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/category/page": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "分类类型：1为菜品分类，2为套餐分类",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "分页查询的name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分页查询的页数",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分页查询的页容量",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "PageQuery failed",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/category/status/{status}": {
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "分类id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "SetStatus failed",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/common/upload": {
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "description": "接收一个文件，并将其上传到本地存储或云存储（如阿里云OSS）",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FileUpload"
+                ],
+                "summary": "上传文件到服务器",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "文件",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "上传成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        " data": {
+                                            "type": "string"
+                                        },
+                                        " msg": {
+                                            "type": "string"
+                                        },
+                                        "code": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "上传失败",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        " data": {
+                                            "type": "string"
+                                        },
+                                        " msg": {
+                                            "type": "string"
+                                        },
+                                        "code": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/dish": {
+            "put": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "description": "修改菜品的信息",
+                        "name": "dto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DishUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "description": "新增信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DishDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "删除id集合",
+                        "name": "ids",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/dish/list": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "分类id",
+                        "name": "categoryId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "$ref": "#/definitions/response.DishListVo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/dish/page": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "description": "新增信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DishPageQueryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "$ref": "#/definitions/common.PageResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/dish/status/{status}": {
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/dish/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dish"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "菜品id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/employee": {
+            "put": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "parameters": [
+                    {
+                        "description": "信息",
+                        "name": "employee",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.EmployeeDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "fail",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "fail",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/employee/": {
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "parameters": [
+                    {
+                        "description": "新增员工信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.EmployeeDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Dupliciated Username",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/employee/editPassword": {
+            "put": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "parameters": [
+                    {
+                        "description": "id和新旧密码",
+                        "name": "employee",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.EmployeeEditPassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "fail",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "406": {
+                        "description": "fail",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/employee/login": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "parameters": [
+                    {
+                        "description": "员工登录信息",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.EmployeeLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.EmployeeLogin"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "401": {
+                        "description": "wrong password or error on json web token generate",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/employee/logout": {
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/employee/page/": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "分页查询的name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分页查询的页数",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分页查询的页容量",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/common.PageResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "501": {
+                        "description": "fail",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/employee/status/{status}": {
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "员工状态",
+                        "name": "status",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "查询员工请求信息",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "501": {
+                        "description": "fail",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/employee/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "员工id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "fail",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/setmeal": {
+            "put": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setmeal"
+                ],
+                "parameters": [
+                    {
+                        "description": "更新套餐和其关联菜品结构体",
+                        "name": "dto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SetMealDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setmeal"
+                ],
+                "parameters": [
+                    {
+                        "description": "菜品信息",
+                        "name": "dto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SetMealDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setmeal"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id集合",
+                        "name": "ids",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/setmeal/page": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setmeal"
+                ],
+                "parameters": [
+                    {
+                        "description": "分页查询dto",
+                        "name": "dto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SetMealPageQueryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "$ref": "#/definitions/response.SetMealPageQueryVo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/setmeal/status/{status}": {
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setmeal"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/setmeal/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "setmeal"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Faliure",
+                        "schema": {
+                            "$ref": "#/definitions/common.Result"
+                        }
+                    }
+                }
+            }
         }
-      }
     },
-    "/admin/dish": {
-      "post": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "dish"
-        ],
-        "parameters": [
-          {
-            "description": "新增信息",
-            "name": "data",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/request.DishDTO"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "400": {
-            "description": "Invalid request payload",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "500": {
-            "description": "Internal Server Faliure",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      }
-    },
-    "/admin/employee": {
-      "put": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Employee"
-        ],
-        "parameters": [
-          {
-            "description": "信息",
-            "name": "employee",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/request.EmployeeDTO"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "400": {
-            "description": "fail",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "500": {
-            "description": "fail",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      }
-    },
-    "/admin/employee/": {
-      "post": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Employee"
-        ],
-        "parameters": [
-          {
-            "description": "新增员工信息",
-            "name": "data",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/request.EmployeeDTO"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "500": {
-            "description": "Dupliciated Username",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      }
-    },
-    "/admin/employee/editPassword": {
-      "put": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Employee"
-        ],
-        "parameters": [
-          {
-            "description": "id和新旧密码",
-            "name": "employee",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/request.EmployeeEditPassword"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "400": {
-            "description": "fail",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "406": {
-            "description": "fail",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      }
-    },
-    "/admin/employee/login": {
-      "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Employee"
-        ],
-        "parameters": [
-          {
-            "description": "员工登录信息",
-            "name": "data",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/request.EmployeeLogin"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/common.Result"
+    "definitions": {
+        "common.PageResult": {
+            "type": "object",
+            "properties": {
+                "records": {
+                    "description": "当前页数据集合"
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/response.EmployeeLogin"
-                    }
-                  }
+                "total": {
+                    "description": "总记录数",
+                    "type": "integer"
                 }
-              ]
             }
-          },
-          "400": {
-            "description": "Invalid request payload",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "401": {
-            "description": "wrong password or error on json web token generate",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      }
-    },
-    "/admin/employee/logout": {
-      "post": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Employee"
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      }
-    },
-    "/admin/employee/page/": {
-      "get": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Employee"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "description": "分页查询的name",
-            "name": "name",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "description": "分页查询的页数",
-            "name": "page",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "description": "分页查询的页容量",
-            "name": "pageSize",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/common.Result"
+        },
+        "common.Result": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/common.PageResult"
-                    }
-                  }
+                "data": {},
+                "msg": {
+                    "type": "string"
                 }
-              ]
             }
-          },
-          "501": {
-            "description": "fail",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
+        },
+        "model.DishFlavor": {
+            "type": "object",
+            "properties": {
+                "dish_id": {
+                    "description": "菜品id",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "口味id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "口味主题 温度|甜度|辣度",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "口味信息 可多个",
+                    "type": "string"
+                }
             }
-          }
+        },
+        "model.SetMealDish": {
+            "type": "object",
+            "properties": {
+                "copies": {
+                    "description": "菜品数量冗余字段",
+                    "type": "integer"
+                },
+                "dishId": {
+                    "description": "菜品id",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "中间表id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "菜品名称冗余字段",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "菜品单价冗余字段",
+                    "type": "number"
+                },
+                "setmealId": {
+                    "description": "套餐id",
+                    "type": "integer"
+                }
+            }
+        },
+        "request.CategoryDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.DishDTO": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "flavors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DishFlavor"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.DishPageQueryDTO": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "description": "分类ID:",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "分页查询的name",
+                    "type": "string"
+                },
+                "page": {
+                    "description": "分页查询的页数",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "分页查询的页容量",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "菜品状态",
+                    "type": "string"
+                }
+            }
+        },
+        "request.DishUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "flavors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DishFlavor"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "request.EmployeeDTO": {
+            "type": "object",
+            "required": [
+                "idNumber",
+                "name",
+                "phone",
+                "sex",
+                "username"
+            ],
+            "properties": {
+                "id": {
+                    "description": "员工id",
+                    "type": "integer"
+                },
+                "idNumber": {
+                    "description": "身份证",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "sex": {
+                    "description": "性别",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "request.EmployeeEditPassword": {
+            "type": "object",
+            "required": [
+                "newPassword",
+                "oldPassword"
+            ],
+            "properties": {
+                "empId": {
+                    "type": "integer"
+                },
+                "newPassword": {
+                    "type": "string"
+                },
+                "oldPassword": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.EmployeeLogin": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "admin"
+                }
+            }
+        },
+        "request.SetMealDTO": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "description": "分类id",
+                    "type": "integer"
+                },
+                "description": {
+                    "description": "套餐描述",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "主键id",
+                    "type": "integer"
+                },
+                "image": {
+                    "description": "套餐图片",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "套餐名称",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "套餐单价 前端存在bug，有时候发送string类型有时候是number类型",
+                    "type": "number"
+                },
+                "setmealDishes": {
+                    "description": "套餐菜品关系",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SetMealDish"
+                    }
+                },
+                "status": {
+                    "description": "套餐状态",
+                    "type": "integer"
+                }
+            }
+        },
+        "request.SetMealPageQueryDTO": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "description": "分类ID:",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "分页查询的name",
+                    "type": "string"
+                },
+                "page": {
+                    "description": "分页查询的页数",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "分页查询的页容量",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "套餐起售状态",
+                    "type": "string"
+                }
+            }
+        },
+        "response.DishListVo": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "type": "integer"
+                },
+                "createTime": {
+                    "type": "string"
+                },
+                "createUser": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "type": "string"
+                },
+                "updateUser": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.EmployeeLogin": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.SetMealPageQueryVo": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "description": "分类id",
+                    "type": "integer"
+                },
+                "categoryName": {
+                    "description": "分类名称",
+                    "type": "string"
+                },
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "createUser": {
+                    "description": "创建用户",
+                    "type": "integer"
+                },
+                "description": {
+                    "description": "套餐描述",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "主键id",
+                    "type": "integer"
+                },
+                "image": {
+                    "description": "套餐图片",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "套餐名称",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "套餐单价",
+                    "type": "number"
+                },
+                "status": {
+                    "description": "套餐状态",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "updateUser": {
+                    "description": "更新用户",
+                    "type": "integer"
+                }
+            }
         }
-      }
     },
-    "/admin/employee/status/{status}": {
-      "post": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Employee"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "description": "员工状态",
-            "name": "status",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "description": "查询员工请求信息",
-            "name": "id",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "501": {
-            "description": "fail",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
+    "securityDefinitions": {
+        "JWTAuth": {
+            "type": "apiKey",
+            "name": "token",
+            "in": "header"
         }
-      }
-    },
-    "/admin/employee/{id}": {
-      "get": {
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Employee"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "description": "员工id",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          },
-          "400": {
-            "description": "fail",
-            "schema": {
-              "$ref": "#/definitions/common.Result"
-            }
-          }
-        }
-      }
     }
-  },
-  "definitions": {
-    "common.PageResult": {
-      "type": "object",
-      "properties": {
-        "records": {
-          "description": "当前页数据集合"
-        },
-        "total": {
-          "description": "总记录数",
-          "type": "integer"
-        }
-      }
-    },
-    "common.Result": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "integer"
-        },
-        "data": {},
-        "msg": {
-          "type": "string"
-        }
-      }
-    },
-    "model.DishFlavor": {
-      "type": "object",
-      "properties": {
-        "dish_id": {
-          "description": "菜品id",
-          "type": "integer"
-        },
-        "id": {
-          "description": "口味id",
-          "type": "integer"
-        },
-        "name": {
-          "description": "口味主题 温度|甜度|辣度",
-          "type": "string"
-        },
-        "value": {
-          "description": "口味信息 可多个",
-          "type": "string"
-        }
-      }
-    },
-    "request.CategoryDTO": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "string"
-        },
-        "sort": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        }
-      }
-    },
-    "request.DishDTO": {
-      "type": "object",
-      "properties": {
-        "categoryId": {
-          "type": "integer"
-        },
-        "description": {
-          "type": "string"
-        },
-        "flavors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/model.DishFlavor"
-          }
-        },
-        "id": {
-          "type": "integer"
-        },
-        "image": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "price": {
-          "type": "string"
-        },
-        "status": {
-          "type": "integer"
-        }
-      }
-    },
-    "request.EmployeeDTO": {
-      "type": "object",
-      "required": [
-        "idNumber",
-        "name",
-        "phone",
-        "sex",
-        "username"
-      ],
-      "properties": {
-        "id": {
-          "description": "员工id",
-          "type": "integer"
-        },
-        "idNumber": {
-          "description": "身份证",
-          "type": "string"
-        },
-        "name": {
-          "description": "姓名",
-          "type": "string"
-        },
-        "phone": {
-          "description": "手机号",
-          "type": "string"
-        },
-        "sex": {
-          "description": "性别",
-          "type": "string"
-        },
-        "username": {
-          "description": "用户名",
-          "type": "string"
-        }
-      }
-    },
-    "request.EmployeeEditPassword": {
-      "type": "object",
-      "required": [
-        "newPassword",
-        "oldPassword"
-      ],
-      "properties": {
-        "empId": {
-          "type": "integer"
-        },
-        "newPassword": {
-          "type": "string"
-        },
-        "oldPassword": {
-          "type": "string"
-        }
-      }
-    },
-    "request.EmployeeLogin": {
-      "type": "object",
-      "required": [
-        "password",
-        "username"
-      ],
-      "properties": {
-        "password": {
-          "type": "string",
-          "example": "123456"
-        },
-        "username": {
-          "type": "string",
-          "example": "admin"
-        }
-      }
-    },
-    "response.EmployeeLogin": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "string"
-        },
-        "token": {
-          "type": "string"
-        },
-        "userName": {
-          "type": "string"
-        }
-      }
-    }
-  },
-  "securityDefinitions": {
-    "JWTAuth": {
-      "type": "apiKey",
-      "name": "token",
-      "in": "header"
-    }
-  }
 }
