@@ -26,5 +26,7 @@ func (er *SetMealRouter) InitApiRouter(router *gin.RouterGroup) {
 		privateRouter.GET("/page", setmealCtrl.PageQuery)
 		privateRouter.GET("/:id", setmealCtrl.GetByIdWithDish)
 		privateRouter.POST("/status/:status", setmealCtrl.OnOrClose)
+		//privateRouter.PUT("/", setmealCtrl.Update)
+		//privateRouter.DELETE("/", setmealCtrl.DeleteBatch)
 	}
 }

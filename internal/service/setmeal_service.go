@@ -64,18 +64,52 @@ func (s SetMealServiceImpl) SaveWithDish(ctx context.Context, dto request.SetMea
 }
 
 func (s SetMealServiceImpl) PageQuery(ctx context.Context, dto request.SetMealPageQueryDTO) (*common.PageResult, error) {
-	//TODO implement me
-	panic("implement me")
+	return s.repo.PageQuery(ctx, dto)
 }
 
 func (s SetMealServiceImpl) OnOrClose(ctx context.Context, id uint64, status int) error {
-	//TODO implement me
-	panic("implement me")
+	return s.repo.SetStatus(ctx, id, status)
 }
 
-func (s SetMealServiceImpl) GetByIdWithDish(ctx context.Context, dishId uint64) (response.SetMealWithDishByIdVo, error) {
-	//TODO implement me
-	panic("implement me")
+func (s SetMealServiceImpl) GetByIdWithDish(ctx context.Context, mealId uint64) (response.SetMealWithDishByIdVo, error) {
+	var (
+		err      error
+		res      response.SetMealWithDishByIdVo
+		setmeal  model.SetMeal
+		dishList []model.SetMealDish
+	)
+	// 为了保持查询结果的一致性，开启事务
+	transaction := s.repo.Transaction(ctx)
+	defer func() {
+		if r := recover(); r != nil {
+			transaction.Rollback()
+		} else if err != nil {
+			transaction.Rollback()
+		}
+	}()
+	// 两次查询 先查询套餐 再查询关联的菜品
+	if setmeal, err = s.repo.GetByIdWithDish(transaction, mealId); err != nil {
+		return res, err
+	}
+	if dishList, err = s.setMealDishRepo.GetBySetMealId(transaction, mealId); err != nil {
+		return res, err
+	}
+	if err = transaction.Commit().Error; err != nil {
+		return res, err
+	}
+	res = response.SetMealWithDishByIdVo{
+		Id:            setmeal.Id,
+		CategoryId:    setmeal.CategoryId,
+		Description:   setmeal.Description,
+		Image:         setmeal.Image,
+		Name:          setmeal.Name,
+		Price:         setmeal.Price,
+		Status:        setmeal.Status,
+		UpdateTime:    setmeal.UpdateTime,
+		CategoryName:  setmeal.Name,
+		SetmealDishes: dishList,
+	}
+	return res, nil
 }
 
 func NewSetMealService(repo repository.SetMealRepo, setMealDishRepo repository.SetMealDishRepo) ISetMealService {

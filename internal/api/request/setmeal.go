@@ -18,5 +18,5 @@ type SetMealPageQueryDTO struct {
 	PageSize   int    `form:"pageSize"`   // 分页查询的页容量
 	Name       string `form:"name"`       // 分页查询的name
 	CategoryId uint64 `form:"categoryId"` // 分类ID:
-	Status     int    `form:"status"`     // 套餐起售状态
+	Status     string `form:"status"`     // 套餐起售状态
 }

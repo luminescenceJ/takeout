@@ -15,7 +15,7 @@ func (s SetMealDishDao) InsertBatch(transaction *gorm.DB, setmealDishs []model.S
 
 func (s SetMealDishDao) GetBySetMealId(transaction *gorm.DB, SetMealId uint64) ([]model.SetMealDish, error) {
 	var setmealDishs []model.SetMealDish
-	err := transaction.Where("set_meal_id = ?", SetMealId).Find(&setmealDishs).Error
+	err := transaction.Where("setmeal_id = ?", SetMealId).Find(&setmealDishs).Error
 	return setmealDishs, err
 }
 
