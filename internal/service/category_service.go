@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"takeout/common"
 	"takeout/common/enum"
-	"takeout/internal/api/request"
+	"takeout/internal/api/admin/request"
 	"takeout/internal/model"
 	"takeout/repository"
 )

@@ -14,7 +14,8 @@ func GlobalInit() *gin.Engine {
 	global.Log = logger.NewLogger(global.Config.Log.Level, global.Config.Log.FilePath)
 	// Gorm初始化
 	global.DB = InitDatabase(global.Config.DataSource.Dsn())
-
+	// Redis初始化
+	global.RedisClient = InitRedis()
 	// Router初始化
 	router := routerInit()
 	return router

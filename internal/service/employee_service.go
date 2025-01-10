@@ -7,8 +7,8 @@ import (
 	"takeout/common/enum"
 	"takeout/common/utils"
 	"takeout/global"
-	"takeout/internal/api/request"
-	"takeout/internal/api/response"
+	"takeout/internal/api/admin/request"
+	"takeout/internal/api/admin/response"
 	"takeout/internal/model"
 	"takeout/repository"
 )

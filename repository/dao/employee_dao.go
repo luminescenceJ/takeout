@@ -4,7 +4,7 @@ import (
 	"context"
 	"gorm.io/gorm"
 	"takeout/common"
-	"takeout/internal/api/request"
+	"takeout/internal/api/admin/request"
 	"takeout/internal/model"
 )
 

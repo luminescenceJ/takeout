@@ -3,7 +3,7 @@ package admin
 import (
 	"github.com/gin-gonic/gin"
 	"takeout/global"
-	"takeout/internal/api/controller"
+	"takeout/internal/api/admin/controller"
 	"takeout/internal/service"
 	"takeout/middle"
 	"takeout/repository/dao"
@@ -14,7 +14,7 @@ type CategoryRouter struct {
 }
 
 func (cr *CategoryRouter) InitApiRouter(router *gin.RouterGroup) {
-	// admin/category
+	// service/category
 	privateRouter := router.Group("category")
 	// 私有路由使用jwt验证
 	privateRouter.Use(middle.VerifiyJWTAdmin())

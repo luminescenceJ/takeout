@@ -7,7 +7,7 @@ import (
 	"takeout/common"
 	"takeout/common/e"
 	"takeout/global"
-	"takeout/internal/api/request"
+	"takeout/internal/api/admin/request"
 	"takeout/internal/service"
 )
 
@@ -19,7 +19,7 @@ func NewCategoryController(service service.ICategoryService) *CategoryController
 	return &CategoryController{service: service}
 }
 
-// @AddCategory 新增分类接口
+// AddCategory @AddCategory 新增分类接口
 // @Tags Category
 // @Security JWTAuth
 // @Produce json
@@ -47,7 +47,7 @@ func (cc *CategoryController) AddCategory(ctx *gin.Context) {
 	})
 }
 
-// @PageQuery 查询分类分页接口
+// PageQuery @PageQuery 查询分类分页接口
 // @Tags Category
 // @Security JWTAuth
 // @Produce json
@@ -133,7 +133,7 @@ func (cc *CategoryController) DeleteById(ctx *gin.Context) {
 	})
 }
 
-// @EditCategory 编辑分类的接口
+// EditCategory @EditCategory 编辑分类的接口
 // @Tags Category
 // @Security JWTAuth
 // @Produce json
@@ -163,7 +163,7 @@ func (cc *CategoryController) EditCategory(ctx *gin.Context) {
 	})
 }
 
-// @SetStatus 启用或禁用分类接口
+// SetStatus @SetStatus 启用或禁用分类接口
 // @Tags Category
 // @Security JWTAuth
 // @Produce json

@@ -12,20 +12,29 @@ import (
 func routerInit() *gin.Engine {
 	r := gin.Default()
 
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	r.StaticFS("/static", http.Dir("static"))
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler)) // 接口文档
+	r.StaticFS("/static", http.Dir("static"))                            //本地存储
 
 	allRouter := router.AllRouter
 
 	// admin
 	admin := r.Group("/admin")
 	{
-		//employee 路由
-		allRouter.EmployeeRouter.InitApiRouter(admin)
-		allRouter.CategoryRouter.InitApiRouter(admin)
-		allRouter.DishRouter.InitApiRouter(admin)
-		allRouter.CommonRouter.InitApiRouter(admin)
-		allRouter.SetMealRouter.InitApiRouter(admin)
+		allRouter.EmployeeRouter.InitApiRouter(admin) // 注册员工路由
+		allRouter.CategoryRouter.InitApiRouter(admin) // 注册菜品类别路由
+		allRouter.DishRouter.InitApiRouter(admin)     // 注册菜品路由
+		allRouter.CommonRouter.InitApiRouter(admin)   // 注册文件上传路由
+		allRouter.SetMealRouter.InitApiRouter(admin)  // 注册套餐路由
+
+		//allRouter.ShopRouter.InitApiRouter(admin) // 注册商店路由
+
+		//allRouter.orderRouter.InitApiRouter(admin)// 注册订单路由
+		//allRouter.reportRouter.InitApiRouter(admin)// 注册报表路由
+		//allRouter.workSpaceRouter.InitApiRouter(admin)// 注册工作台路由
+	}
+	user := r.Group("/user")
+	{
+		allRouter.WxUserRouter.InitApiRouter(user)
 	}
 	return r
 }

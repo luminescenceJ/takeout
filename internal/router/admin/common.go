@@ -2,7 +2,7 @@ package admin
 
 import (
 	"github.com/gin-gonic/gin"
-	"takeout/internal/api/controller"
+	"takeout/internal/api/admin/controller"
 	"takeout/middle"
 )
 

@@ -7,8 +7,8 @@ import (
 	"takeout/common"
 	"takeout/common/e"
 	"takeout/global"
-	"takeout/internal/api/request"
-	"takeout/internal/api/response"
+	"takeout/internal/api/admin/request"
+	"takeout/internal/api/admin/response"
 	"takeout/internal/service"
 )
 

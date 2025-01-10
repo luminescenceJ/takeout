@@ -12,12 +12,12 @@ var envPtr = pflag.String("env", "dev", "Environment: dev or prod")
 type AllConfig struct {
 	Server     Server
 	DataSource DataSource
-	//Redis      Redis
-	Log    Log
-	Jwt    Jwt
-	AliOss AliOss
-	Path   Path
-	//Wechat     Wechat
+	Redis      Redis
+	Log        Log
+	Jwt        Jwt
+	AliOss     AliOss
+	Path       Path
+	Wechat     Wechat
 }
 
 type Path struct {
@@ -64,6 +64,18 @@ type AliOss struct {
 	AccessKeyId     string `mapstructure:"access_key_id"`
 	AccessKeySecret string `mapstructure:"access_key_secret"`
 	BucketName      string `mapstructure:"bucket_name"`
+}
+
+type Redis struct {
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	Password string `mapstructure:"password"`
+	Database int    `mapstructure:"database"`
+}
+
+type Wechat struct {
+	AppId     string `mapstructure:"appid"`
+	AppSecret string `mapstructure:"secret"`
 }
 
 func InitLoadConfig() *AllConfig {

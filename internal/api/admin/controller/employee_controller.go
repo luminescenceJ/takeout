@@ -9,7 +9,7 @@ import (
 	"takeout/common/e"
 	"takeout/common/enum"
 	"takeout/global"
-	"takeout/internal/api/request"
+	"takeout/internal/api/admin/request"
 	"takeout/internal/model"
 	"takeout/internal/service"
 )

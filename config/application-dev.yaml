@@ -40,3 +40,33 @@ alioss:
   access_key_id: LTAI5tG76SY7EF5Cnwr9oYeM
   access_key_secret: bRbpNl4E7iRIc3SURmuO4nHZFODPZW
   bucket_name: asda1s3d2a1sd263asd1a3s654a65sd4a65
+
+redis:
+  host: localhost
+  password: 123456
+  port: 6379
+  database: 0
+
+wechat:
+  # 微信登录所需配置
+  # 小程序的appid
+  appid: wx32b3dec381b5e1d0
+  # 小程序的秘钥
+  secret: 981e5a859e6c4b5f809d0023baf15e4e
+#  # 微信支付所需配置
+#  # 商户号
+#  mchid: your_mchid
+#  # 商户API证书的证书序列号
+#  mchSerialNo: your_mchSerialNo
+#  # 商户私钥文件
+#  privateKeyFilePath: your_privateKeyFilePath
+#  # 证书解密的密钥
+#  apiV3Key: your_apiV3Key
+#  # 平台证书
+#  weChatPayCertFilePath: your_weChatPayCertFilePath
+#  # 支付成功的回调地址
+#  # cpolar生成的临时公网地址 https://xxxxxx.cpolar.top
+#  # 每次测试使用到微信支付功能都需要重新生成并改写
+#  notifyUrl: https://xxxxxx.cpolar.top/notify/paySuccess
+#  # 退款成功的回调地址
+#  refundNotifyUrl: https://xxxxxx.cpolar.top/notify/refundSuccess

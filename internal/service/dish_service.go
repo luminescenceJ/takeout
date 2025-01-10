@@ -6,8 +6,8 @@ import (
 	"strings"
 	"takeout/common"
 	"takeout/common/enum"
-	"takeout/internal/api/request"
-	"takeout/internal/api/response"
+	"takeout/internal/api/admin/request"
+	"takeout/internal/api/admin/response"
 	"takeout/internal/model"
 	"takeout/repository"
 )
