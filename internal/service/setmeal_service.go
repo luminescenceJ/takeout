@@ -7,6 +7,7 @@ import (
 	"takeout/common"
 	"takeout/internal/api/admin/request"
 	"takeout/internal/api/admin/response"
+	userResponse "takeout/internal/api/user/response"
 	"takeout/internal/model"
 	"takeout/repository"
 )
@@ -18,6 +19,8 @@ type ISetMealService interface {
 	GetByIdWithDish(ctx context.Context, dishId uint64) (response.SetMealWithDishByIdVo, error)
 	Update(ctx context.Context, dto request.SetMealDTO) error
 	DeleteBatch(ctx context.Context, ids string) error
+	GetDishBySetmealId(ctx context.Context, setmealId uint64) ([]userResponse.DishItemVO, error)
+	List(ctx context.Context, categoryId string) ([]model.SetMeal, error)
 }
 
 type SetMealServiceImpl struct {
@@ -193,6 +196,17 @@ func (s SetMealServiceImpl) GetByIdWithDish(ctx context.Context, mealId uint64) 
 		SetmealDishes: dishList,
 	}
 	return res, nil
+}
+
+func (s SetMealServiceImpl) GetDishBySetmealId(ctx context.Context, setmealId uint64) ([]userResponse.DishItemVO, error) {
+	// 根据套餐id查询包含的菜品
+	return s.repo.GetDishBySetmealId(ctx, setmealId)
+}
+
+func (s SetMealServiceImpl) List(ctx context.Context, categoryId string) ([]model.SetMeal, error) {
+	// 根据分类id查询套餐
+	id, _ := strconv.ParseUint(categoryId, 10, 64)
+	return s.repo.GetSetmealByCategoryId(ctx, id)
 }
 
 func NewSetMealService(repo repository.SetMealRepo, setMealDishRepo repository.SetMealDishRepo) ISetMealService {

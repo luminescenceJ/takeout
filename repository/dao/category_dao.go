@@ -26,8 +26,11 @@ func (c *CategoryDao) DeleteById(ctx context.Context, id uint64) error {
 
 func (c *CategoryDao) List(ctx context.Context, cate int) ([]model.Category, error) {
 	var res []model.Category
-	err := c.db.WithContext(ctx).
-		Where("type = ?", cate).
+	query := c.db.WithContext(ctx)
+	if cate != 0 {
+		query = query.Where("type = ?", cate)
+	}
+	err := query.
 		Order("sort asc").
 		Order("create_time desc").
 		Find(&res).

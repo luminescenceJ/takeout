@@ -33,7 +33,7 @@ jwt:
     # 设置jwt过期时间
     ttl: 7200000
     # 设置前端传递过来的令牌名称
-    name: Authorization
+    name: authentication
 
 alioss:
   endpoint: oss-cn-beijing.aliyuncs.com

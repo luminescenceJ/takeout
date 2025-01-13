@@ -2,10 +2,12 @@ package dao
 
 import (
 	"context"
+	"errors"
 	"gorm.io/gorm"
 	"takeout/common"
 	"takeout/internal/api/admin/request"
 	"takeout/internal/api/admin/response"
+	userResponse "takeout/internal/api/user/response"
 	"takeout/internal/model"
 	"takeout/repository"
 )
@@ -79,6 +81,43 @@ func (s SetMealDao) GetByIdWithDish(db *gorm.DB, dishId uint64) (model.SetMeal, 
 	}
 	return setMeal, nil
 
+}
+
+func (s SetMealDao) GetDishBySetmealId(ctx context.Context, setmealId uint64) ([]userResponse.DishItemVO, error) {
+	var (
+		dishItemVO []userResponse.DishItemVO
+		err        error
+	)
+	err = s.db.WithContext(ctx).
+		Table("setmeal_dish").
+		Select("setmeal_dish.name, setmeal_dish.copies , dish.description , dish.image").
+		Joins("left join dish  on setmeal_dish.dish_id = dish.id").
+		Where("setmeal_id = ?", setmealId).
+		Order("dish.update_time desc").
+		Scan(&dishItemVO).
+		Error
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return []userResponse.DishItemVO{}, err
+	}
+	return dishItemVO, nil
+}
+
+func (s SetMealDao) GetSetmealByCategoryId(ctx context.Context, categoryId uint64) ([]model.SetMeal, error) {
+	// 根据dishId集合查询具体的描述并返回所有菜品
+	var (
+		setmeals []model.SetMeal
+		err      error
+	)
+	if err = s.db.WithContext(ctx).
+		Where("category_id = ?", categoryId).
+		Order("update_time desc").
+		Find(&setmeals).
+		Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return []model.SetMeal{}, err
+	}
+
+	return setmeals, nil
 }
 
 func NewSetMealDao(db *gorm.DB) repository.SetMealRepo {

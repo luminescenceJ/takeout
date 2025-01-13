@@ -18,7 +18,7 @@ func (cr *WxUserRouter) InitApiRouter(router *gin.RouterGroup) {
 	privateRouter := router.Group("user")
 	publicRouter := router.Group("user")
 
-	privateRouter.Use(middle.VerifiyJWTAdmin()) // 私有路由使用jwt验证
+	privateRouter.Use(middle.VerifiyJWTUser()) // 私有路由使用jwt验证
 
 	//依赖注入
 	cr.service = service.NewWxUserService(dao.NewWxUserDao(global.DB))

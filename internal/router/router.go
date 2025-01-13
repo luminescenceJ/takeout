@@ -13,6 +13,10 @@ type RouterGroup struct {
 	admin.SetMealRouter
 	admin.ShopRouter
 	user.WxUserRouter
+	UserShop     user.ShopRouter
+	UserCategory user.CategoryRouter
+	UserDish     user.DishRouter
+	UserSetmeal  user.SetmealRouter
 }
 
 var AllRouter = new(RouterGroup)

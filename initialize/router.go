@@ -35,6 +35,10 @@ func routerInit() *gin.Engine {
 	user := r.Group("/user")
 	{
 		allRouter.WxUserRouter.InitApiRouter(user)
+		allRouter.UserCategory.InitApiRouter(user)
+		allRouter.UserShop.InitApiRouter(user)
+		allRouter.UserDish.InitApiRouter(user)
+		allRouter.UserSetmeal.InitApiRouter(user)
 	}
 	return r
 }

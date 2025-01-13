@@ -19,12 +19,12 @@ func GenerateToken(userId uint64, grantScope string, secret string) (string, err
 		UserId:     userId,
 		GrantScope: grantScope,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "Auth_Server",                                   //签发者
-			Subject:   grantScope,                                      //签发对象
-			Audience:  jwt.ClaimStrings{"PC", "Wechat_Program"},        //签发受众
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),   //过期时间
-			NotBefore: jwt.NewNumericDate(time.Now().Add(time.Second)), //最早使用时间
-			IssuedAt:  jwt.NewNumericDate(time.Now()),                  //签发时间
+			Issuer:    "Auth_Server",                                      //签发者
+			Subject:   grantScope,                                         //签发对象
+			Audience:  jwt.ClaimStrings{"PC", "Wechat_Program"},           //签发受众
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)), //过期时间
+			NotBefore: jwt.NewNumericDate(time.Now()),                     //最早使用时间
+			IssuedAt:  jwt.NewNumericDate(time.Now()),                     //签发时间
 		},
 	}
 	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(secret))

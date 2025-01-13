@@ -44,7 +44,7 @@ func (ws WxUserService) Login(ctx *gin.Context, request request.WxUserLoginDTO) 
 		}
 	}
 	// 用户存在，分发jwt令牌
-	jwtConfig := global.Config.Jwt.Admin
+	jwtConfig := global.Config.Jwt.User
 	if jwtToken, err = utils.GenerateToken(uint64(user.ID), jwtConfig.Name, jwtConfig.Secret); err != nil {
 		return response.WxUserVO{}, err
 	}
