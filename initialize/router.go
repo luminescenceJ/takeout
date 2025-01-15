@@ -39,6 +39,9 @@ func routerInit() *gin.Engine {
 		allRouter.UserShop.InitApiRouter(user)
 		allRouter.UserDish.InitApiRouter(user)
 		allRouter.UserSetmeal.InitApiRouter(user)
+		allRouter.UserAddressBook.InitApiRouter(user)
+		allRouter.UserShoppingCart.InitApiRouter(user)
+		allRouter.UserOrder.InitApiRouter(user)
 	}
 	return r
 }

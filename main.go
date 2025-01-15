@@ -1,12 +1,5 @@
 package main
 
-import (
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"takeout/global"
-	"takeout/initialize"
-)
-
 // @title           Swagger Example API
 // @version         1.0
 // @description     This is a sample server celler server.
@@ -25,6 +18,12 @@ import (
 // @securityDefinitions.apikey JWTAuth
 // @in header
 // @name token
+import (
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"takeout/global"
+	"takeout/initialize"
+)
 
 func main() {
 
