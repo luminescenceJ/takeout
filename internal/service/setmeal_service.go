@@ -2,15 +2,21 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 	"strings"
 	"takeout/common"
+	"takeout/common/utils"
+	"takeout/global"
 	"takeout/internal/api/admin/request"
 	"takeout/internal/api/admin/response"
 	userResponse "takeout/internal/api/user/response"
 	"takeout/internal/model"
 	"takeout/repository"
 )
+
+// SetmealCacheKey redis key 套餐缓存key
+const SetmealCacheKey = "setmealCache::"
 
 type ISetMealService interface {
 	SaveWithDish(ctx context.Context, dto request.SetMealDTO) error
@@ -29,6 +35,7 @@ type SetMealServiceImpl struct {
 }
 
 func (s SetMealServiceImpl) Update(ctx context.Context, dto request.SetMealDTO) error {
+
 	var (
 		err   error
 		price = float64(dto.Price)
@@ -71,6 +78,8 @@ func (s SetMealServiceImpl) Update(ctx context.Context, dto request.SetMealDTO) 
 	if err = transaction.Commit().Error; err != nil {
 		return err
 	}
+	utils.CleanCache(SetmealCacheKey + "*") // 清除缓存
+
 	return nil
 }
 
@@ -105,6 +114,9 @@ func (s SetMealServiceImpl) DeleteBatch(ctx context.Context, ids string) error {
 			return err
 		}
 	}
+
+	utils.CleanCache(SetmealCacheKey + "*") // 清除缓存
+
 	return nil
 }
 
@@ -146,6 +158,9 @@ func (s SetMealServiceImpl) SaveWithDish(ctx context.Context, dto request.SetMea
 	if err = transaction.Commit().Error; err != nil {
 		return err
 	}
+
+	utils.CleanCache(SetmealCacheKey + "*") // 清除缓存
+
 	return nil
 }
 
@@ -154,6 +169,7 @@ func (s SetMealServiceImpl) PageQuery(ctx context.Context, dto request.SetMealPa
 }
 
 func (s SetMealServiceImpl) OnOrClose(ctx context.Context, id uint64, status int) error {
+	utils.CleanCache(SetmealCacheKey + "*") // 清除缓存
 	return s.repo.SetStatus(ctx, id, status)
 }
 
@@ -163,7 +179,9 @@ func (s SetMealServiceImpl) GetByIdWithDish(ctx context.Context, mealId uint64) 
 		res      response.SetMealWithDishByIdVo
 		setmeal  model.SetMeal
 		dishList []model.SetMealDish
+		//resJSON  []byte
 	)
+
 	// 为了保持查询结果的一致性，开启事务
 	transaction := s.repo.Transaction(ctx)
 	defer func() {
@@ -195,6 +213,7 @@ func (s SetMealServiceImpl) GetByIdWithDish(ctx context.Context, mealId uint64) 
 		CategoryName:  setmeal.Name,
 		SetmealDishes: dishList,
 	}
+
 	return res, nil
 }
 
@@ -203,10 +222,37 @@ func (s SetMealServiceImpl) GetDishBySetmealId(ctx context.Context, setmealId ui
 	return s.repo.GetDishBySetmealId(ctx, setmealId)
 }
 
+// 根据分类id查询套餐
 func (s SetMealServiceImpl) List(ctx context.Context, categoryId string) ([]model.SetMeal, error) {
-	// 根据分类id查询套餐
+	var (
+		meals     []model.SetMeal
+		err       error
+		mealsJSON []byte
+	)
+	// 优先命中Redis缓存
+	cacheData, err := global.RedisClient.Get(SetmealCacheKey + categoryId).Result()
+	if err == nil {
+		global.Log.Info("查询Redis套餐缓存数据: " + SetmealCacheKey + categoryId)
+		if err = json.Unmarshal([]byte(cacheData), &meals); err == nil {
+			return meals, nil
+		}
+	} else {
+		global.Log.Info("查询Redis套餐缓存数据失败")
+	}
+
 	id, _ := strconv.ParseUint(categoryId, 10, 64)
-	return s.repo.GetSetmealByCategoryId(ctx, id)
+	meals, err = s.repo.GetSetmealByCategoryId(ctx, id)
+
+	// 设置redis缓存
+	if err == nil {
+		if mealsJSON, err = json.Marshal(meals); err == nil {
+			// 设置缓存，过期时间为0表示不会过期
+			if err = global.RedisClient.Set(SetmealCacheKey+categoryId, mealsJSON, 0).Err(); err != nil {
+				global.Log.Warn("redis 缓存设置失败")
+			}
+		}
+	}
+	return meals, err
 }
 
 func NewSetMealService(repo repository.SetMealRepo, setMealDishRepo repository.SetMealDishRepo) ISetMealService {

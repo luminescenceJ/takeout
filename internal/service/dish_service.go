@@ -2,15 +2,21 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 	"strings"
 	"takeout/common"
 	"takeout/common/enum"
+	"takeout/common/utils"
+	"takeout/global"
 	"takeout/internal/api/admin/request"
 	"takeout/internal/api/admin/response"
 	"takeout/internal/model"
 	"takeout/repository"
 )
+
+// DishCacheKey redis key 菜品缓存key
+const DishCacheKey = "dishCache::"
 
 type IDishService interface {
 	AddDishWithFlavors(ctx context.Context, dto request.DishDTO) error
@@ -67,6 +73,7 @@ func (d DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.Dis
 	if err = transaction.Commit().Error; err != nil {
 		return err // 这里会直接返回错误，defer 中的回滚会执行一次
 	}
+	utils.CleanCache(DishCacheKey + "*")
 	return nil
 }
 
@@ -102,31 +109,60 @@ func (d DishServiceImpl) GetByIdWithFlavors(ctx context.Context, id uint64) (res
 }
 
 func (d DishServiceImpl) List(ctx context.Context, categoryId uint64) ([]response.DishListVo, error) {
-	dish, err := d.repo.List(ctx, categoryId)
+	// todo : 加入redis缓存
+	var (
+		dishes    []model.Dish
+		cacheData string
+		dishList  []response.DishListVo
+		err       error
+	)
+	// 优先命中Redis缓存
+	cacheData, err = global.RedisClient.Get(DishCacheKey + strconv.Itoa(int(categoryId))).Result()
+	if err == nil {
+		global.Log.Info("查询Redis菜品缓存数据: " + DishCacheKey + strconv.Itoa(int(categoryId)))
+		if err = json.Unmarshal([]byte(cacheData), &dishList); err == nil {
+			return dishList, nil
+		}
+	} else {
+		global.Log.Info("查询Redis菜品缓存数据失败")
+	}
+
+	dishes, err = d.repo.List(ctx, categoryId)
 	if err != nil {
 		return nil, err
 	}
-	count := len(dish)
+	count := len(dishes)
 	dishVo := make([]response.DishListVo, count)
 	for i := 0; i < count; i++ {
 		dishVo[i] = response.DishListVo{
-			Id:          dish[i].Id,
-			Name:        dish[i].Name,
-			CategoryId:  dish[i].CategoryId,
-			Description: dish[i].Description,
-			Price:       dish[i].Price,
-			Image:       dish[i].Image,
-			Status:      dish[i].Status,
-			CreateTime:  dish[i].CreateTime,
-			UpdateTime:  dish[i].UpdateTime,
-			CreateUser:  dish[i].CreateUser,
-			UpdateUser:  dish[i].UpdateUser,
+			Id:          dishes[i].Id,
+			Name:        dishes[i].Name,
+			CategoryId:  dishes[i].CategoryId,
+			Description: dishes[i].Description,
+			Price:       dishes[i].Price,
+			Image:       dishes[i].Image,
+			Status:      dishes[i].Status,
+			CreateTime:  dishes[i].CreateTime,
+			UpdateTime:  dishes[i].UpdateTime,
+			CreateUser:  dishes[i].CreateUser,
+			UpdateUser:  dishes[i].UpdateUser,
 		}
 	}
+
+	// 设置redis缓存
+
+	if dishVoJSON, err := json.Marshal(dishVo); err == nil {
+		// 设置缓存，过期时间为0表示不会过期
+		if err = global.RedisClient.Set(DishCacheKey+strconv.Itoa(int(categoryId)), dishVoJSON, 0).Err(); err != nil {
+			global.Log.Warn("redis 缓存菜品设置失败")
+		}
+	}
+
 	return dishVo, nil
 }
 
 func (d DishServiceImpl) OnOrClose(ctx context.Context, id uint64, status int) error {
+	utils.CleanCache(DishCacheKey + "*")
 	return d.repo.OnOrClose(ctx, id, status)
 }
 
@@ -173,6 +209,7 @@ func (d DishServiceImpl) Update(ctx context.Context, dto request.DishUpdateDTO) 
 	if err = transaction.Commit().Error; err != nil {
 		return err // 这里会直接返回错误，defer 中的回滚会执行一次
 	}
+	utils.CleanCache(DishCacheKey + "*")
 	return nil
 }
 
@@ -206,6 +243,7 @@ func (d *DishServiceImpl) Delete(ctx context.Context, ids string) error {
 			return err
 		}
 	}
+	utils.CleanCache(DishCacheKey + "*")
 	return nil
 }
 
