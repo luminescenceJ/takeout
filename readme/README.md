@@ -77,3 +77,8 @@ func (ec *EmployeeController) AddEmployee(ctx *gin.Context) {
 
 错误的参数名称如`Param`和`Params`会导致swagger识别不出来
 而Http请求的头部Token的设置对于接口调试也很重要，设置统一Token需要参考https://github.com/swaggo/gin-swagger/issues/90
+
+### 消息队列 的使用
+数据一致性问题：在分布式系统中，我们需要关注数据一致性问题。例如，当多个客户端同时修改同一份数据时，可能会出现数据不一致的情况。为了解决这个问题，我们可以使用分布式锁或者消息队列等方式来保证数据的一致性。在苍穹外卖项目中，我们使用了Redis的原子操作和消息队列等技术来保证数据的一致性。
+
+### 

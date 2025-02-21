@@ -182,7 +182,7 @@ func (ac *AddressBookController) GetById(ctx *gin.Context) {
 func (ac *AddressBookController) GetCurAddress(ctx *gin.Context) {
 	var (
 		code        = e.SUCCESS
-		addressList model.AddressBook
+		addressList []model.AddressBook
 		err         error
 	)
 
@@ -245,18 +245,23 @@ func (ac *AddressBookController) GetDefaultAddress(ctx *gin.Context) {
 // @Failure 500 {object} common.Result "Internal Server Faliure"
 // @Router /user/addressBook/default [put]
 func (ac *AddressBookController) SetDefaultAddress(ctx *gin.Context) {
+	type Request struct {
+		ID uint64 `json:"id"`
+	}
+
 	var (
-		code = e.SUCCESS
-		id   uint64
-		err  error
+		code      = e.SUCCESS
+		requestId Request
+		err       error
 	)
-	if id, err = strconv.ParseUint(ctx.Param("id"), 10, 64); err != nil {
+
+	if err = ctx.ShouldBindJSON(&requestId); err != nil {
 		global.Log.Debug("C端-地址簿接口 SetDefaultAddress param error:", err.Error())
 		ctx.JSON(http.StatusBadRequest, common.Result{})
 		return
 	}
 
-	if err = ac.service.SetDefaultAddressBook(ctx, id); err != nil {
+	if err = ac.service.SetDefaultAddressBook(ctx, requestId.ID); err != nil {
 		code = e.ERROR
 		global.Log.Debug("SetDefaultAddressBook error:", err.Error())
 		ctx.JSON(http.StatusInternalServerError, common.Result{

@@ -13,7 +13,7 @@ type IAddressBookService interface {
 	UpdateAddressBook(ctx *gin.Context, address model.AddressBook) error
 	DeleteAddressBook(ctx *gin.Context, id uint64) error
 	GetAddressBook(ctx *gin.Context, id uint64) (model.AddressBook, error)
-	GetCurAddressBook(ctx *gin.Context) (model.AddressBook, error)
+	GetCurAddressBook(ctx *gin.Context) ([]model.AddressBook, error)
 	GetDefaultAddressBook(ctx *gin.Context) (model.AddressBook, error)
 	SetDefaultAddressBook(ctx *gin.Context, id uint64) error
 }
@@ -40,20 +40,19 @@ func (as *AddressBookService) DeleteAddressBook(ctx *gin.Context, id uint64) err
 func (as *AddressBookService) GetAddressBook(ctx *gin.Context, id uint64) (model.AddressBook, error) {
 	return as.repo.GetAddressById(ctx, id)
 }
-
-func (as *AddressBookService) GetCurAddressBook(ctx *gin.Context) (model.AddressBook, error) {
+func (as *AddressBookService) GetCurAddressBook(ctx *gin.Context) ([]model.AddressBook, error) {
 	var (
 		id      uint64
-		address model.AddressBook
+		address []model.AddressBook
 		err     error
 	)
 	if CurrentId, ok := ctx.Get(enum.CurrentId); ok {
 		id = CurrentId.(uint64)
 	} else {
-		return model.AddressBook{}, errors.New("current id book not found")
+		return []model.AddressBook{}, errors.New("current id book not found")
 	}
 	if address, err = as.repo.GetCurAddressBook(ctx, id); err != nil {
-		return model.AddressBook{}, err
+		return []model.AddressBook{}, err
 	}
 	return address, nil
 }
@@ -74,5 +73,9 @@ func (as *AddressBookService) GetDefaultAddressBook(ctx *gin.Context) (model.Add
 	return address, nil
 }
 func (as *AddressBookService) SetDefaultAddressBook(ctx *gin.Context, id uint64) error {
-	return as.repo.SetDefaultAddressBook(ctx, id)
+	userId := uint64(0)
+	if CurrentId, ok := ctx.Get(enum.CurrentId); ok {
+		userId = CurrentId.(uint64)
+	}
+	return as.repo.SetDefaultAddressBook(ctx, userId, id)
 }
