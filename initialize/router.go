@@ -27,7 +27,7 @@ func routerInit() *gin.Engine {
 		allRouter.SetMealRouter.InitApiRouter(admin)  // 注册套餐路由
 		//allRouter.ShopRouter.InitApiRouter(admin) // 注册商店路由
 
-		//allRouter.orderRouter.InitApiRouter(admin)// 注册订单路由
+		//allRouter.OrderRouter.InitApiRouter(admin)// 注册订单路由
 		//allRouter.reportRouter.InitApiRouter(admin)// 注册报表路由
 		//allRouter.workSpaceRouter.InitApiRouter(admin)// 注册工作台路由
 	}
@@ -39,7 +39,6 @@ func routerInit() *gin.Engine {
 		allRouter.UserDish.InitApiRouter(user)
 		allRouter.UserSetmeal.InitApiRouter(user)
 		allRouter.UserAddressBook.InitApiRouter(user)
-
 		allRouter.UserShoppingCart.InitApiRouter(user)
 		allRouter.UserOrder.InitApiRouter(user)
 	}

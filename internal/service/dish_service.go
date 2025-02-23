@@ -109,7 +109,6 @@ func (d DishServiceImpl) GetByIdWithFlavors(ctx context.Context, id uint64) (res
 }
 
 func (d DishServiceImpl) List(ctx context.Context, categoryId uint64) ([]response.DishListVo, error) {
-	// todo : 加入redis缓存
 	var (
 		dishes    []model.Dish
 		cacheData string

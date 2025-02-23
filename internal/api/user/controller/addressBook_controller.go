@@ -7,6 +7,7 @@ import (
 	"takeout/common"
 	"takeout/common/e"
 	"takeout/global"
+	"takeout/internal/api/user/request"
 	"takeout/internal/model"
 	"takeout/internal/service"
 )
@@ -23,7 +24,7 @@ func NewAddressBookController(service service.IAddressBookService) *AddressBookC
 // @Tags C端-地址簿接口
 // @Security JWTAuth
 // @Produce json
-// @Param address body model.AddressBook true "查询信息"
+// @Param address body request.AddressBookDTO true "查询信息"
 // @Success 200 {object} common.Result "success"
 // @Failure 400 {object} common.Result "Invalid request payload"
 // @Failure 500 {object} common.Result "Internal Server Faliure"
@@ -31,11 +32,11 @@ func NewAddressBookController(service service.IAddressBookService) *AddressBookC
 func (ac *AddressBookController) Create(ctx *gin.Context) {
 	var (
 		code    = e.SUCCESS
-		address model.AddressBook
+		address request.AddressBookDTO
 		err     error
 	)
 
-	if err = ctx.ShouldBind(&address); err != nil {
+	if err = ctx.ShouldBindJSON(&address); err != nil {
 		global.Log.Debug("C端-地址簿接口 Create param error:", err.Error())
 		ctx.JSON(http.StatusBadRequest, common.Result{})
 		return
@@ -70,7 +71,7 @@ func (ac *AddressBookController) Create(ctx *gin.Context) {
 func (ac *AddressBookController) Update(ctx *gin.Context) {
 	var (
 		code    = e.SUCCESS
-		address model.AddressBook
+		address request.AddressBookDTO
 		err     error
 	)
 

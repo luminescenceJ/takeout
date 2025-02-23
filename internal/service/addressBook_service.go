@@ -3,14 +3,17 @@ package service
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/ulule/deepcopier"
+	"strconv"
 	"takeout/common/enum"
+	"takeout/internal/api/user/request"
 	"takeout/internal/model"
 	"takeout/repository"
 )
 
 type IAddressBookService interface {
-	CreateAddressBook(ctx *gin.Context, address model.AddressBook) error
-	UpdateAddressBook(ctx *gin.Context, address model.AddressBook) error
+	CreateAddressBook(ctx *gin.Context, address request.AddressBookDTO) error
+	UpdateAddressBook(ctx *gin.Context, address request.AddressBookDTO) error
 	DeleteAddressBook(ctx *gin.Context, id uint64) error
 	GetAddressBook(ctx *gin.Context, id uint64) (model.AddressBook, error)
 	GetCurAddressBook(ctx *gin.Context) ([]model.AddressBook, error)
@@ -28,11 +31,31 @@ func NewAddressBookService(repo repository.AddressBookRepo) IAddressBookService 
 	}
 }
 
-func (as *AddressBookService) CreateAddressBook(ctx *gin.Context, address model.AddressBook) error {
-	return as.repo.CreateAddress(ctx, address)
+func (as *AddressBookService) CreateAddressBook(ctx *gin.Context, address request.AddressBookDTO) error {
+	var data model.AddressBook
+	userId := uint64(0)
+	if CurrentId, ok := ctx.Get(enum.CurrentId); ok {
+		userId = CurrentId.(uint64)
+	}
+	if err := deepcopier.Copy(address).To(&data); err != nil {
+		return err
+	}
+	data.UserId = int(userId)
+	data.Label = strconv.Itoa(address.Label)
+	return as.repo.CreateAddress(ctx, data)
 }
-func (as *AddressBookService) UpdateAddressBook(ctx *gin.Context, address model.AddressBook) error {
-	return as.repo.UpdateAddressById(ctx, address)
+func (as *AddressBookService) UpdateAddressBook(ctx *gin.Context, address request.AddressBookDTO) error {
+	var data model.AddressBook
+	userId := uint64(0)
+	if CurrentId, ok := ctx.Get(enum.CurrentId); ok {
+		userId = CurrentId.(uint64)
+	}
+	if err := deepcopier.Copy(address).To(&data); err != nil {
+		return err
+	}
+	data.UserId = int(userId)
+	data.Label = strconv.Itoa(address.Label)
+	return as.repo.UpdateAddressById(ctx, data)
 }
 func (as *AddressBookService) DeleteAddressBook(ctx *gin.Context, id uint64) error {
 	return as.repo.DeleteById(ctx, id)

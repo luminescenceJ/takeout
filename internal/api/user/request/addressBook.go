@@ -1,7 +1,7 @@
-package model
+package request
 
-// AddressBook 地址簿数据模型
-type AddressBook struct {
+// AddressBookDTO 地址簿传输数据模型
+type AddressBookDTO struct {
 	Id int `json:"id" gorm:"primary_key;AUTO_INCREMENT"`
 	// 用户id
 	UserId int `json:"userId"`
@@ -26,12 +26,7 @@ type AddressBook struct {
 	// 详细地址
 	Detail string `json:"detail"`
 	// 标签
-	Label string `json:"label"`
+	Label int `json:"label"`
 	// 是否默认 0否 1是
 	IsDefault int `json:"isDefault"`
-}
-
-// TableName 指定表名
-func (AddressBook) TableName() string {
-	return "address_book"
 }
