@@ -7,6 +7,7 @@ import (
 	"net/http"
 	_ "takeout/docs" // 导入生成的 Swagger 文档
 	"takeout/internal/router"
+	"takeout/internal/router/websocket"
 )
 
 func routerInit() *gin.Engine {
@@ -16,6 +17,9 @@ func routerInit() *gin.Engine {
 	r.StaticFS("/static", http.Dir("static"))                            //本地存储
 
 	allRouter := router.AllRouter
+
+	// websocket
+	websocket.WSRouter(r)
 
 	// admin
 	admin := r.Group("/admin")
@@ -30,7 +34,7 @@ func routerInit() *gin.Engine {
 		allRouter.ReportRouter.InitApiRouter(admin)    // 注册报表路由
 		allRouter.WorkSpaceRouter.InitApiRouter(admin) // 注册工作台路由
 	}
-
+	// user
 	user := r.Group("/user")
 	{
 		allRouter.UserWxUserRouter.InitApiRouter(user) // 注册微信用户路由

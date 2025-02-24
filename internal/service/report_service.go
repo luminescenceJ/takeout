@@ -196,6 +196,7 @@ func (s *ReportService) Top10Statistics(begin, end string) (response.SalesTop10R
 
 // ExportExcel 导出运营数据Excel报表
 func (s *ReportService) ExportExcel(ctx *gin.Context) {
+	//log.Printf("error happen")
 	// 查询概览运营数据，提供给Excel模板文件
 	begin := time.Now().AddDate(0, 0, -30)
 	beginTime := time.Date(begin.Year(), begin.Month(), begin.Day(),
@@ -208,6 +209,7 @@ func (s *ReportService) ExportExcel(ctx *gin.Context) {
 	// 基于提供好的模板文件创建一个新的Excel表格对象
 	excel, err := excelize.OpenFile("./template/运营数据报表模板.xlsx")
 	if err != nil {
+
 		return
 	}
 	// 关闭文件流

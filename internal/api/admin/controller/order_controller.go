@@ -142,7 +142,7 @@ func (c *OrderController) OrderDelivery(ctx *gin.Context) {
 	// 日志打印
 	log.Printf("订单派送: [%v]", orderId)
 	// 调用service层进行处理
-	if err = c.service.OrderDelivery(ctx); err != nil {
+	if err = c.service.OrderDelivery(ctx, orderId); err != nil {
 		code = e.ERROR
 		global.Log.Warn("OrderDelivery Error:", err.Error())
 		ctx.JSON(http.StatusInternalServerError, common.Result{
@@ -170,7 +170,7 @@ func (c *OrderController) OrderComplete(ctx *gin.Context) {
 	// 日志打印
 	log.Printf("完成订单: [%v]", orderId)
 	// 调用service层进行处理
-	if err = c.service.OrderDelivery(ctx); err != nil {
+	if err = c.service.OrderComplete(ctx, orderId); err != nil {
 		code = e.ERROR
 		global.Log.Warn("OrderDelivery Error:", err.Error())
 		ctx.JSON(http.StatusInternalServerError, common.Result{

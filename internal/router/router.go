@@ -3,6 +3,7 @@ package router
 import (
 	"takeout/internal/router/admin"
 	"takeout/internal/router/user"
+	"takeout/internal/router/websocket"
 )
 
 type RouterGroup struct {
@@ -15,7 +16,7 @@ type RouterGroup struct {
 	admin.OrderRouter
 	admin.ReportRouter
 	admin.WorkSpaceRouter
-
+	websocket.Server
 	UserWxUserRouter user.WxUserRouter
 	UserShop         user.ShopRouter
 	UserCategory     user.CategoryRouter

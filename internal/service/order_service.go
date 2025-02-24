@@ -14,6 +14,7 @@ import (
 	"takeout/internal/api/user/request"
 	"takeout/internal/api/user/response"
 	"takeout/internal/model"
+	"takeout/internal/router/websocket"
 	"takeout/repository"
 	"time"
 )
@@ -30,8 +31,8 @@ type IOrderService interface {
 
 	OrderConfirm(ctx *gin.Context, data request.OrderConfirmDTO) error
 	OrderRejection(ctx *gin.Context, data request.OrderRejectionDTO) error
-	OrderDelivery(ctx *gin.Context) error
-	OrderComplete(ctx *gin.Context) error
+	OrderDelivery(ctx *gin.Context, orderId string) error
+	OrderComplete(ctx *gin.Context, orderId string) error
 	CancelOrderByBusiness(ctx *gin.Context, data request.OrderCancelDTO) error
 	OrderConditionSearch(ctx *gin.Context, data request.OrderPageQueryDTO) (*common.PageResult, error)
 	OrderStatistics(ctx *gin.Context) (response.OrderStatisticsVO, error)
@@ -158,14 +159,13 @@ func (s *OrderService) OrderReminder(ctx *gin.Context, orderId string) error {
 	if order == nil {
 		return errors.New("订单不存在")
 	}
-	//todo:websocket
-	//// 基于WebSocket实现催单
-	//jsonMap := map[string]any{
-	//	"type":    2,
-	//	"orderId": orderId,
-	//	"content": "订单号: " + order.Number,
-	//}
-	//websocket.WSServer.SendToAllClients(jsonMap)
+	// 基于WebSocket实现催单
+	jsonMap := map[string]any{
+		"type":    2,
+		"orderId": orderId,
+		"content": "订单号: " + order.Number,
+	}
+	websocket.WSServer.SendToAllClients(jsonMap)
 	return nil
 
 }
@@ -192,14 +192,13 @@ func (s *OrderService) paySuccess(ctx *gin.Context, orderNumber string) {
 	if err != nil {
 		return
 	}
-	//todo:websocket
-	//// 基于WebSocket提醒商家来单了
-	//jsonMap := map[string]any{
-	//	"type":    1,
-	//	"orderId": order.Id,
-	//	"content": "订单号: " + orderNumber,
-	//}
-	//websocket.WSServer.SendToAllClients(jsonMap)
+	// 基于WebSocket提醒商家来单了
+	jsonMap := map[string]any{
+		"type":    1,
+		"orderId": order.Id,
+		"content": "订单号: " + orderNumber,
+	}
+	websocket.WSServer.SendToAllClients(jsonMap)
 }
 
 // 处理支付超时订单
@@ -264,9 +263,8 @@ func (s *OrderService) CancelOrderByBusiness(ctx *gin.Context, data request.Orde
 }
 
 // OrderDelivery 订单派送
-func (s *OrderService) OrderDelivery(ctx *gin.Context) error {
-	userId := int(ctx.MustGet(enum.CurrentId).(uint64))
-	err := s.repo.OrderDelivery(strconv.Itoa(userId))
+func (s *OrderService) OrderDelivery(ctx *gin.Context, orderId string) error {
+	err := s.repo.OrderDelivery(orderId)
 	if err != nil {
 		return err
 	}
@@ -274,9 +272,8 @@ func (s *OrderService) OrderDelivery(ctx *gin.Context) error {
 }
 
 // OrderComplete 完成订单
-func (s *OrderService) OrderComplete(ctx *gin.Context) error {
-	userId := int(ctx.MustGet(enum.CurrentId).(uint64))
-	err := s.repo.OrderComplete(strconv.Itoa(userId))
+func (s *OrderService) OrderComplete(ctx *gin.Context, orderId string) error {
+	err := s.repo.OrderComplete(orderId)
 	if err != nil {
 		return err
 	}
