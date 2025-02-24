@@ -15,7 +15,6 @@ import (
 	"takeout/internal/api/user/response"
 	"takeout/internal/model"
 	"takeout/repository"
-	"takeout/repository/dao"
 	"time"
 )
 
@@ -24,9 +23,18 @@ type IOrderService interface {
 	RepetitionOrder(ctx *gin.Context, orderId string) error
 	OrderSubmit(ctx *gin.Context, data request.OrderSubmitDTO) (response.OrderSubmitVO, error)
 	OrderPayment(ctx *gin.Context, orderData request.OrderPaymentDTO) response.OrderPaymentVO
-	OrderDetail(ctx *gin.Context, orderId string) (response.OrderVO, error)
 	CancelOrder(ctx *gin.Context, orderId string) error
 	HistoryOrders(ctx *gin.Context, dto request.PageQueryOrderDTO) (*common.PageResult, error)
+
+	OrderDetail(ctx *gin.Context, orderId string) (response.OrderVO, error)
+
+	OrderConfirm(ctx *gin.Context, data request.OrderConfirmDTO) error
+	OrderRejection(ctx *gin.Context, data request.OrderRejectionDTO) error
+	OrderDelivery(ctx *gin.Context) error
+	OrderComplete(ctx *gin.Context) error
+	CancelOrderByBusiness(ctx *gin.Context, data request.OrderCancelDTO) error
+	OrderConditionSearch(ctx *gin.Context, data request.OrderPageQueryDTO) (*common.PageResult, error)
+	OrderStatistics(ctx *gin.Context) (response.OrderStatisticsVO, error)
 }
 type OrderService struct {
 	repo repository.OrderRepo
@@ -203,7 +211,7 @@ func (s *OrderService) processTimeoutOrder() {
 	duration, _ := time.ParseDuration("-1m")
 	nowTime.Add(15 * duration)
 	// 查询出超时订单
-	ordersList, _ := dao.GetOrderByStatusAndOrderTime(enum.PendingPayment, model.LocalTime(nowTime))
+	ordersList, _ := s.repo.GetOrderByStatusAndOrderTime(enum.PendingPayment, model.LocalTime(nowTime))
 
 	if ordersList != nil && len(ordersList) > 0 {
 		for _, order := range ordersList {
@@ -215,11 +223,70 @@ func (s *OrderService) processTimeoutOrder() {
 	}
 }
 
-//// OrderConfirm 接单
-//func (s *OrderService) OrderConfirm(ctx *gin.Context, data request.OrderConfirmDTO) error {
-//	err := s.repo.OrderConfirm(ctx, data)
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
+// OrderConfirm 接单
+func (s *OrderService) OrderConfirm(ctx *gin.Context, data request.OrderConfirmDTO) error {
+	err := s.repo.OrderConfirm(ctx, data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// OrderRejection 拒绝订单
+func (s *OrderService) OrderRejection(ctx *gin.Context, data request.OrderRejectionDTO) error {
+	err := s.repo.OrderRejection(ctx, data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CancelOrderByBusiness 商家取消订单
+func (s *OrderService) CancelOrderByBusiness(ctx *gin.Context, data request.OrderCancelDTO) error {
+	order, err := s.repo.GetOrderById(strconv.Itoa(data.OrderId))
+	if err != nil {
+		return err
+	}
+	if order.PayStatus == enum.Paid {
+		// 用户已支付，需要退款
+		// 模拟微信退款
+		log.Printf("已支付订单被取消订单, 退款: [%v￥]", order.Amount)
+	}
+	// 根据订单id更新订单状态、取消原因、取消时间
+	order.Status = enum.Cancelled
+	order.CancelReason = data.CancelReason
+	order.CancelTime = model.LocalTime(time.Now())
+	err = s.repo.UpdateOrder(order)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// OrderDelivery 订单派送
+func (s *OrderService) OrderDelivery(ctx *gin.Context) error {
+	userId := int(ctx.MustGet(enum.CurrentId).(uint64))
+	err := s.repo.OrderDelivery(strconv.Itoa(userId))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// OrderComplete 完成订单
+func (s *OrderService) OrderComplete(ctx *gin.Context) error {
+	userId := int(ctx.MustGet(enum.CurrentId).(uint64))
+	err := s.repo.OrderComplete(strconv.Itoa(userId))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *OrderService) OrderConditionSearch(ctx *gin.Context, data request.OrderPageQueryDTO) (*common.PageResult, error) {
+	return s.repo.OrderConditionSearch(ctx, data)
+}
+
+func (s *OrderService) OrderStatistics(ctx *gin.Context) (response.OrderStatisticsVO, error) {
+	return s.repo.OrderStatistics(ctx)
+}

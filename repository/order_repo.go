@@ -9,6 +9,7 @@ import (
 )
 
 type OrderRepo interface {
+	// user
 	GetOrderDetailByOrderId(orderId string) (orderDetailList []model.OrderDetail, err error)
 	OrderSubmit(ctx context.Context, data request.OrderSubmitDTO, userId int) (response.OrderSubmitVO, error)
 	RepetitionOrder(ctx context.Context, orderId string, userId int) error
@@ -18,8 +19,12 @@ type OrderRepo interface {
 	GetOrderByNumberAndUserId(orderNumber, userId string) (*model.Order, error)
 	HistoryOrders(ctx context.Context, data request.PageQueryOrderDTO, userId int) (*common.PageResult, error)
 
-	//OrderConfirm(ctx context.Context, data request.OrderConfirmDTO) error
-	//OrderRejection(ctx context.Context, data *request.OrderRejectionDTO) error
-	//OrderDelivery(orderId string) error
-	//OrderComplete(orderId string) error
+	// admin
+	OrderConfirm(ctx context.Context, data request.OrderConfirmDTO) error
+	OrderRejection(ctx context.Context, data request.OrderRejectionDTO) error
+	OrderDelivery(orderId string) error
+	OrderComplete(orderId string) error
+	OrderConditionSearch(ctx context.Context, data request.OrderPageQueryDTO) (*common.PageResult, error)
+	OrderStatistics(ctx context.Context) (response.OrderStatisticsVO, error)
+	GetOrderByStatusAndOrderTime(status int, orderTime model.LocalTime) ([]model.Order, error)
 }

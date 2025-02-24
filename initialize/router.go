@@ -20,27 +20,27 @@ func routerInit() *gin.Engine {
 	// admin
 	admin := r.Group("/admin")
 	{
-		allRouter.EmployeeRouter.InitApiRouter(admin) // 注册员工路由
-		allRouter.CategoryRouter.InitApiRouter(admin) // 注册菜品类别路由
-		allRouter.DishRouter.InitApiRouter(admin)     // 注册菜品路由
-		allRouter.CommonRouter.InitApiRouter(admin)   // 注册文件上传路由
-		allRouter.SetMealRouter.InitApiRouter(admin)  // 注册套餐路由
-		//allRouter.ShopRouter.InitApiRouter(admin) // 注册商店路由
-
-		//allRouter.OrderRouter.InitApiRouter(admin)// 注册订单路由
-		//allRouter.reportRouter.InitApiRouter(admin)// 注册报表路由
-		//allRouter.workSpaceRouter.InitApiRouter(admin)// 注册工作台路由
+		allRouter.EmployeeRouter.InitApiRouter(admin)  // 注册员工路由
+		allRouter.CategoryRouter.InitApiRouter(admin)  // 注册菜品类别路由
+		allRouter.DishRouter.InitApiRouter(admin)      // 注册菜品路由
+		allRouter.CommonRouter.InitApiRouter(admin)    // 注册文件上传路由
+		allRouter.SetMealRouter.InitApiRouter(admin)   // 注册套餐路由
+		allRouter.ShopRouter.InitApiRouter(admin)      // 注册商店路由
+		allRouter.OrderRouter.InitApiRouter(admin)     // 注册订单路由
+		allRouter.ReportRouter.InitApiRouter(admin)    // 注册报表路由
+		allRouter.WorkSpaceRouter.InitApiRouter(admin) // 注册工作台路由
 	}
+
 	user := r.Group("/user")
 	{
-		allRouter.WxUserRouter.InitApiRouter(user)
-		allRouter.UserCategory.InitApiRouter(user)
-		allRouter.UserShop.InitApiRouter(user)
-		allRouter.UserDish.InitApiRouter(user)
-		allRouter.UserSetmeal.InitApiRouter(user)
-		allRouter.UserAddressBook.InitApiRouter(user)
-		allRouter.UserShoppingCart.InitApiRouter(user)
-		allRouter.UserOrder.InitApiRouter(user)
+		allRouter.UserWxUserRouter.InitApiRouter(user) // 注册微信用户路由
+		allRouter.UserCategory.InitApiRouter(user)     // 注册分类路由
+		allRouter.UserShop.InitApiRouter(user)         // 注册店铺路由
+		allRouter.UserDish.InitApiRouter(user)         // 注册菜品路由
+		allRouter.UserSetmeal.InitApiRouter(user)      // 注册套餐路由
+		allRouter.UserAddressBook.InitApiRouter(user)  // 注册地址簿路由
+		allRouter.UserShoppingCart.InitApiRouter(user) // 注册购物车路由
+		allRouter.UserOrder.InitApiRouter(user)        // 注册订单路由
 	}
 	return r
 }

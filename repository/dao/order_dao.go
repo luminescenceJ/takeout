@@ -187,7 +187,7 @@ func (d OrderDao) OrderReminder(orderId string) {
 	//websocket.WSServer.SendToAllClients(jsonMap)
 }
 
-// 根据订单id查询订单
+// GetOrderById 根据订单id查询订单
 func (d OrderDao) GetOrderById(orderId string) (*model.Order, error) {
 	var order *model.Order
 	if err := global.DB.
@@ -251,7 +251,7 @@ func (d OrderDao) OrderConfirm(ctx context.Context, data request.OrderConfirmDTO
 }
 
 // OrderRejection 拒单
-func (d OrderDao) OrderRejection(ctx context.Context, data *request.OrderRejectionDTO) error {
+func (d OrderDao) OrderRejection(ctx context.Context, data request.OrderRejectionDTO) error {
 	// 根据id查询订单
 	order, err := d.GetOrderById(strconv.Itoa(data.OrderId))
 	if err != nil {
@@ -310,60 +310,99 @@ func (d OrderDao) OrderComplete(orderId string) error {
 	return nil
 }
 
-// GetDailyTurnover 获取每日营业额
-func GetDailyTurnover(begin, end time.Time) (float64, error) {
-	var turnover float64
+// OrderConditionSearch 订单搜索
+func (d OrderDao) OrderConditionSearch(ctx context.Context, data request.OrderPageQueryDTO) (*common.PageResult, error) {
+	var (
+		OrderList  []model.Order
+		orderVOs   []response.OrderVO
+		pageResult common.PageResult
+		err        error
+	)
+
+	// 模糊搜索拼接条件
+	query := global.DB.Table("orders").WithContext(ctx)
+	if data.Status != 0 {
+		query = query.Where("status = ?", data.Status)
+	}
+	if data.Number != "" {
+		query = query.Where("number like ?", "%"+data.Number+"%")
+	}
+	if data.Phone != "" {
+		query = query.Where("phone like ?", "%"+data.Phone+"%")
+	}
+	if data.UserId != 0 {
+		query = query.Where("user_id = ?", data.UserId)
+	}
+	if data.BeginTime != "" {
+		beginTime, err := time.Parse("2006-01-02 15:04:05", data.BeginTime)
+		if err != nil {
+			return nil, err
+		}
+		query = query.Where("order_time >= ?", model.LocalTime(beginTime))
+	}
+	if data.EndTime != "" {
+		endTime, err := time.Parse("2006-01-02 15:04:05", data.EndTime)
+		if err != nil {
+			return nil, err
+		}
+		query = query.Where("order_time <= ?", model.LocalTime(endTime))
+	}
+	if err = query.Count(&pageResult.Total).Error; err != nil {
+		return nil, err
+	}
+	// 设置按 order_time desc 排序
+	if err = query.Scopes(pageResult.Paginate(&data.Page, &data.PageSize)).
+		Order("order_time desc").
+		Scan(&OrderList).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	// 处理数据
+	if OrderList != nil && len(OrderList) > 0 {
+		for _, order := range OrderList {
+			orderId := order.Id
+			// 查询订单明细
+			orderDetails, _ := d.GetOrderDetailByOrderId(strconv.Itoa(orderId))
+			var orderVO response.OrderVO
+			if err = deepcopier.Copy(&order).To(&orderVO); err != nil {
+				return nil, err
+			}
+			orderVO.OrderDishes = GetOrderDishes(orderDetails)
+			orderVOs = append(orderVOs, orderVO)
+		}
+	}
+	pageResult.Records = orderVOs
+	return &pageResult, nil
+}
+
+// OrderStatistics 各个状态的订单数量统计
+func (d OrderDao) OrderStatistics(ctx context.Context) (response.OrderStatisticsVO, error) {
+	// 根据状态，分别查询出待接单、待派送、派送中的订单数量
+	toBeConfirmed, confirmed, deliveryInProgress := int64(0), int64(0), int64(0)
 	if err := global.DB.Table("orders").
-		Where("status = ?", enum.Completed).
-		Where("order_time >= ?", begin).
-		Where("order_time <= ?", end).
-		Select("ifnull(sum(amount),0) as amount").
-		Scan(&turnover).Error; err != nil {
-		return 0, err
+		WithContext(ctx).
+		Where("status = ?", enum.ToBeConfirmed).
+		Count(&toBeConfirmed).Error; err != nil {
+		return response.OrderStatisticsVO{}, err
 	}
-	return turnover, nil
-}
-
-// GetDailyOrderCount 获取每日订单数
-func GetDailyOrderCount(begin, end time.Time, status int) (int, error) {
-	var orderCount int64
-	if status != 0 {
-		// 查询有效订单数量
-		if err := global.DB.Table("orders").
-			Where("order_time >= ?", begin).
-			Where("order_time <= ?", end).
-			Where("status = ?", status).
-			Count(&orderCount).Error; err != nil {
-			return 0, err
-		}
-	} else {
-		// 查询总订单数量
-		if err := global.DB.Table("orders").
-			Where("order_time >= ?", begin).
-			Where("order_time <= ?", end).
-			Count(&orderCount).Error; err != nil {
-			return 0, err
-		}
+	if err := global.DB.Table("orders").
+		WithContext(ctx).
+		Where("status = ?", enum.Confirmed).
+		Count(&confirmed).Error; err != nil {
+		return response.OrderStatisticsVO{}, err
 	}
-	return int(orderCount), nil
-}
-
-// GetSalesTop10 获取销量前十的商品
-func GetSalesTop10(begin, end time.Time) ([]request.GoodsSalesDTO, error) {
-	goodsSales := make([]request.GoodsSalesDTO, 0)
-	if err := global.DB.Table("order_detail").
-		Select("order_detail.name, sum(order_detail.number) as number").
-		Joins("left join orders on order_detail.order_id = orders.id").
-		Where("orders.status = ?", enum.Completed).
-		Where("orders.order_time >= ?", begin).
-		Where("orders.order_time <= ?", end).
-		Group("order_detail.name").
-		Order("number desc").
-		Limit(10).Offset(0).
-		Scan(&goodsSales).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return []request.GoodsSalesDTO{}, err
+	if err := global.DB.Table("orders").
+		WithContext(ctx).
+		Where("status = ?", enum.DeliveryInProgress).
+		Count(&deliveryInProgress).Error; err != nil {
+		return response.OrderStatisticsVO{}, err
 	}
-	return goodsSales, nil
+	// 将查询出的数据封装到orderStatisticsVO中响应
+	return response.OrderStatisticsVO{
+		ToBeConfirmed:      int(toBeConfirmed),
+		Confirmed:          int(confirmed),
+		DeliveryInProgress: int(deliveryInProgress),
+	}, nil
 }
 
 // 根据订单详情获取菜品信息字符串
@@ -377,9 +416,9 @@ func GetOrderDishes(orderDetails []model.OrderDetail) string {
 }
 
 // GetOrderByStatusAndOrderTime 根据状态和下单时间查询订单
-func GetOrderByStatusAndOrderTime(status int, orderTime model.LocalTime) ([]model.Order, error) {
+func (d OrderDao) GetOrderByStatusAndOrderTime(status int, orderTime model.LocalTime) ([]model.Order, error) {
 	var orders []model.Order
-	if err := global.DB.
+	if err := d.db.
 		Where("status = ?", status).
 		Where("order_time < ?", orderTime).
 		Find(&orders).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {

@@ -12,7 +12,11 @@ type RouterGroup struct {
 	admin.CommonRouter
 	admin.SetMealRouter
 	admin.ShopRouter
-	user.WxUserRouter
+	admin.OrderRouter
+	admin.ReportRouter
+	admin.WorkSpaceRouter
+
+	UserWxUserRouter user.WxUserRouter
 	UserShop         user.ShopRouter
 	UserCategory     user.CategoryRouter
 	UserDish         user.DishRouter

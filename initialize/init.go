@@ -8,6 +8,7 @@ import (
 )
 
 func GlobalInit() *gin.Engine {
+
 	// 配置文件初始化
 	global.Config = config.InitLoadConfig()
 	// Log初始化
