@@ -41,13 +41,16 @@ func (d DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.Dis
 	defer func() {
 		if r := recover(); r != nil {
 			// 发生 panic 时回滚事务
+			global.Log.Error("Transaction panicked", "error", r)
 			transaction.Rollback()
 		} else if err != nil {
 			// 发生错误时回滚事务
+			global.Log.Error("Error occurred during transaction", "error", err)
 			transaction.Rollback()
 		}
 	}()
 
+	// 插入菜品
 	dish := model.Dish{
 		Id:          0,
 		Name:        dto.Name,
@@ -58,41 +61,58 @@ func (d DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.Dis
 		Status:      enum.ENABLE,
 	}
 	if err = d.repo.Insert(transaction, &dish); err != nil {
+		global.Log.Error("Failed to insert dish", "dish", dto, "error", err)
 		return err
 	}
+	global.Log.Info("Successfully inserted dish", "dish", dto)
 
 	// 外键设置
 	for i := range dto.Flavors {
 		dto.Flavors[i].DishId = dish.Id
 	}
 	if err = d.dishFlavorRepo.InsertBatch(transaction, dto.Flavors); err != nil {
+		global.Log.Error("Failed to insert dish flavors", "dishId", dish.Id, "error", err)
+		return err
+	}
+	global.Log.Info("Successfully inserted dish flavors", "dishId", dish.Id)
+
+	// 提交事务
+	if err = transaction.Commit().Error; err != nil {
+		global.Log.Error("Failed to commit transaction", "error", err)
 		return err
 	}
 
-	// 最终返回时，提交事务，若提交失败，返回错误
-	if err = transaction.Commit().Error; err != nil {
-		return err // 这里会直接返回错误，defer 中的回滚会执行一次
-	}
+	// 清理缓存
 	utils.CleanCache(DishCacheKey + "*")
+	global.Log.Info("Cache cleared for dish data")
+
 	return nil
 }
 
 func (d DishServiceImpl) PageQuery(ctx context.Context, dto *request.DishPageQueryDTO) (*common.PageResult, error) {
+	global.Log.Debug("Received request for dish page query", "params", dto)
 
-	return d.repo.PageQuery(ctx, dto)
+	pageResult, err := d.repo.PageQuery(ctx, dto)
+	if err != nil {
+		global.Log.Error("Failed to query page result", "error", err)
+		return nil, err
+	}
+
+	global.Log.Info("Successfully fetched page query result", "result", pageResult)
+	return pageResult, nil
 }
 
 func (d DishServiceImpl) GetByIdWithFlavors(ctx context.Context, id uint64) (response.DishVo, error) {
-	var (
-		dish   *model.Dish
-		dishVO response.DishVo
-		err    error
-	)
+	var dishVO response.DishVo
+	global.Log.Debug("Received request to get dish by ID", "id", id)
 
-	if dish, err = d.repo.GetById(ctx, id); err != nil {
+	dish, err := d.repo.GetById(ctx, id)
+	if err != nil {
+		global.Log.Error("Failed to fetch dish by ID", "id", id, "error", err)
 		return response.DishVo{}, err
 	}
 
+	// 填充数据
 	dishVO = response.DishVo{
 		CategoryId:  dish.CategoryId,
 		Id:          dish.Id,
@@ -105,7 +125,8 @@ func (d DishServiceImpl) GetByIdWithFlavors(ctx context.Context, id uint64) (res
 		UpdateTime:  dish.UpdateTime,
 	}
 
-	return dishVO, err
+	global.Log.Info("Successfully fetched dish by ID", "id", id, "dish", dishVO)
+	return dishVO, nil
 }
 
 func (d DishServiceImpl) List(ctx context.Context, categoryId uint64) ([]response.DishListVo, error) {
@@ -115,25 +136,32 @@ func (d DishServiceImpl) List(ctx context.Context, categoryId uint64) ([]respons
 		dishList  []response.DishListVo
 		err       error
 	)
-	// 优先命中Redis缓存
+
+	// 查询 Redis 缓存
 	cacheData, err = global.RedisClient.Get(DishCacheKey + strconv.Itoa(int(categoryId))).Result()
 	if err == nil {
-		global.Log.Info("查询Redis菜品缓存数据: " + DishCacheKey + strconv.Itoa(int(categoryId)))
+		global.Log.Info("Redis cache hit for dishes", "categoryId", categoryId)
 		if err = json.Unmarshal([]byte(cacheData), &dishList); err == nil {
 			return dishList, nil
+		} else {
+			global.Log.Warn("Failed to unmarshal cached data", "categoryId", categoryId, "error", err)
 		}
 	} else {
-		global.Log.Info("查询Redis菜品缓存数据失败")
+		global.Log.Info("Cache miss for dishes", "categoryId", categoryId)
 	}
 
+	// 查询数据库
 	dishes, err = d.repo.List(ctx, categoryId)
 	if err != nil {
+		global.Log.Error("Failed to fetch dishes from DB", "categoryId", categoryId, "error", err)
 		return nil, err
 	}
+
+	// 转换为响应数据格式
 	count := len(dishes)
-	dishVo := make([]response.DishListVo, count)
+	dishList = make([]response.DishListVo, count)
 	for i := 0; i < count; i++ {
-		dishVo[i] = response.DishListVo{
+		dishList[i] = response.DishListVo{
 			Id:          dishes[i].Id,
 			Name:        dishes[i].Name,
 			CategoryId:  dishes[i].CategoryId,
@@ -148,16 +176,16 @@ func (d DishServiceImpl) List(ctx context.Context, categoryId uint64) ([]respons
 		}
 	}
 
-	// 设置redis缓存
-
-	if dishVoJSON, err := json.Marshal(dishVo); err == nil {
-		// 设置缓存，过期时间为0表示不会过期
+	// 设置 Redis 缓存
+	if dishVoJSON, err := json.Marshal(dishList); err == nil {
 		if err = global.RedisClient.Set(DishCacheKey+strconv.Itoa(int(categoryId)), dishVoJSON, 0).Err(); err != nil {
-			global.Log.Warn("redis 缓存菜品设置失败")
+			global.Log.Warn("Failed to set Redis cache", "categoryId", categoryId, "error", err)
+		} else {
+			global.Log.Info("Successfully cached dishes in Redis", "categoryId", categoryId)
 		}
 	}
 
-	return dishVo, nil
+	return dishList, nil
 }
 
 func (d DishServiceImpl) OnOrClose(ctx context.Context, id uint64, status int) error {
@@ -214,7 +242,7 @@ func (d DishServiceImpl) Update(ctx context.Context, dto request.DishUpdateDTO) 
 
 func (d *DishServiceImpl) Delete(ctx context.Context, ids string) error {
 	var err error
-	// 删除分两步， 删除菜品和删除关联的口味 (ids 为需要删除的菜品id集合，如"1,2,3")
+	// 删除分两步，删除菜品和删除关联的口味 (ids 为需要删除的菜品id集合，如"1,2,3")
 	idList := strings.Split(ids, ",")
 	for _, idStr := range idList {
 		dishId, _ := strconv.ParseUint(idStr, 10, 64)
@@ -227,22 +255,35 @@ func (d *DishServiceImpl) Delete(ctx context.Context, ids string) error {
 				transaction.Rollback()
 			}
 		}()
+
 		// 删除菜品的口味数据
 		err = d.dishFlavorRepo.DeleteByDishId(transaction, dishId)
 		if err != nil {
+			global.Log.Error("Failed to delete dish flavors", "dishId", dishId, "error", err)
 			return err
 		}
+
 		// 删除菜品
 		err = d.repo.Delete(transaction, dishId)
 		if err != nil {
+			global.Log.Error("Failed to delete dish", "dishId", dishId, "error", err)
 			return err
 		}
+
 		// 提交事务
 		if err = transaction.Commit().Error; err != nil {
+			global.Log.Error("Failed to commit transaction", "dishId", dishId, "error", err)
 			return err
 		}
+
+		// 记录删除成功
+		global.Log.Info("Successfully deleted dish", "dishId", dishId)
 	}
+
+	// 清理缓存
 	utils.CleanCache(DishCacheKey + "*")
+	global.Log.Info("Cache cleared after deletion")
+
 	return nil
 }
 
