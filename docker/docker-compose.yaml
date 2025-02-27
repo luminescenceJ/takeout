@@ -1,0 +1,60 @@
+version: '3'
+services:
+  redis:
+    image: redis
+    container_name: go-redis
+    restart: always
+    volumes:
+      - ./redis/data:/data
+    command: redis-server --requirepass 123456
+    ports:
+      - '6379:6379'
+    networks:
+      - my_network  # 自定义网络
+  mysql:
+    image: mysql:8.0.18
+    container_name: go-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: sky_take_out
+      TZ: Asia/Shanghai
+      LANG: en_US.UTF-8
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./mysql/data:/var/lib/mysql  # 映射数据目录
+      - ./mysql/init:/docker-entrypoint-initdb.d/  # 映射初始化文件目录
+    command:
+      --bind-address=0.0.0.0
+      --max_connections=1000
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --default-authentication-plugin=mysql_native_password
+    networks:
+      - my_network  # 自定义网络
+  web:
+    container_name: gin-server
+    build:
+      context: .. # 使用上级目录 /take作为根目录
+      dockerfile: .\docker\dockerfile
+    restart: always
+    environment:
+      TZ: Asia/Shanghai  # 设置环境变量[1,4](@ref)
+    volumes:
+      - .\server\config/:/app/config/
+      # 该共享卷用来存储日志文件
+      - .\server\log:/app/logger/
+      - .\server\static:/app/static/
+    ports:
+      - '8080:8080'
+    depends_on:
+      - mysql # 确保MySQL先启动
+      - redis
+    networks:
+      - my_network  # 自定义网络
+
+
+networks:
+  my_network:
+    driver: bridge
