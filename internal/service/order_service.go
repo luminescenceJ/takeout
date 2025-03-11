@@ -47,14 +47,15 @@ func NewOrderService(repo repository.OrderRepo) IOrderService {
 		global.Log.Info("启动定时器: [%s]", time.Now().Format("2006-01-02 15:04:05"))
 		// 获得定时器
 		timerTask := cron.New(cron.WithSeconds())
-		// 添加定时器任务
+		// 添加定时器任务 每分钟执行 超时订单取消
 		if _, err := timerTask.AddFunc("0 * * * * ?", service.processTimeoutOrder); err != nil {
 			global.Log.Warn("TimerTaskError")
 		}
+		////每天凌晨1点 派送中订单自动完成
 		//if _, err := timerTask.AddFunc("0 0 1 * * ?", service.processDeliveryOrder); err != nil {
 		//	panic(errs.TimerTaskError)
 		//}
-		// 启动定时器
+		////启动定时器
 		timerTask.Start()
 	}()
 	return service

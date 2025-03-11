@@ -1,122 +1,97 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"math/rand"
-	"strconv"
-	"time"
+	"os"
 )
 
-func main() {
-	//rand.Seed(time.Now().UnixNano())
+type loc struct {
+	x int
+	y int
+}
 
-	const Max = 100000
-	const NumReceivers = 10
-	const NumSenders = 1000
+func check(matrix [][]byte, dst loc, key map[byte]bool) bool {
+	if dst.x >= len(matrix) || dst.x < 0 || dst.y < 0 || dst.y >= len(matrix[0]) || matrix[dst.x][dst.y] == 0 {
+		return false
+	} else if matrix[dst.x][dst.y] <= 'Z' && matrix[dst.x][dst.y] >= 'A' {
+		if key[byte(matrix[dst.x][dst.y]-32)] {
+			return true
+		}
+		return false
+	}
+	return true
+}
 
-	dataCh := make(chan int, 100)
-	stopCh := make(chan struct{})
-
-	// It must be a buffered channel.
-	toStop := make(chan string, 1)
-
-	var stoppedBy string
-
-	// moderator
-	go func() {
-		stoppedBy = <-toStop
-		fmt.Println(stoppedBy)
-		close(stopCh)
-	}()
-
-	// senders
-	for i := 0; i < NumSenders; i++ {
-		go func(id string) {
-			for {
-				value := rand.Intn(Max)
-				if value == 0 {
-					select {
-					case toStop <- "sender#" + id:
-					default:
-					}
-					return
-				}
-
-				select {
-				case <-stopCh:
-					return
-				case dataCh <- value:
-				}
-			}
-		}(strconv.Itoa(i))
+func bfs(start, end loc, matrix [][]byte, key map[byte]bool, distance [][]int, step int) {
+	// distance 维护到当前为止的最少步数，如果到这里的步数大于distance[i,j]表示绕圈，直接return
+	if distance[start.x][start.y] == -1 {
+		distance[start.x][start.y] = step
+	} else if distance[start.x][start.y] <= step {
+		return
 	}
 
-	// receivers
-	for i := 0; i < NumReceivers; i++ {
-		go func(id string) {
-			for {
-				select {
-				case <-stopCh:
-					return
-				case value := <-dataCh:
-					if value == Max-1 {
-						select {
-						case toStop <- "receiver#" + id:
-						default:
-						}
-						return
-					}
-
-					fmt.Println(value)
-				}
-			}
-		}(strconv.Itoa(i))
+	if start == end {
+		return
 	}
 
-	select {
-	case <-time.After(time.Hour):
+	for i := -1; i <= 1; i++ {
+		for j := -1; j <= 1; j++ {
+			next := loc{
+				x: start.x + i,
+				y: start.y + j,
+			}
+			if i == 0 && j == 0 || !check(matrix, next, key) {
+				continue
+			}
+
+			if matrix[start.x][start.y] < 'z' && matrix[start.x][start.y] > 'a' {
+				key[matrix[start.x][start.y]] = true
+			}
+			bfs(next, end, matrix, key, distance, step+1)
+			if matrix[start.x][start.y] < 'z' && matrix[start.x][start.y] > 'a' {
+				key[matrix[start.x][start.y]] = false
+			}
+
+		}
 	}
 
 }
 
-//
-//import (
-//	"fmt"
-//	"sort"
-//)
-//
-//func main() {
-//	// a := 0
-//	// b := 0
-//	// for {
-//	//     n, _ := fmt.Scan(&a, &b)
-//	//     if n == 0 {
-//	//         break
-//	//     } else {
-//	//         fmt.Printf("%d\n", a + b)
-//	//     }
-//	// }
-//	var n int
-//	_, _ = fmt.Scan(&n)
-//	arr := make([]int, n)
-//	for i := 0; i < n; i++ {
-//		_, _ = fmt.Scan(&arr[i])
-//	}
-//	sort.Ints(arr)
-//	for i := 0; i < n; {
-//		if i+1 >= len(arr) {
-//			break
-//		}
-//		if arr[i] == arr[i+1] {
-//			arr = append(arr[:i], arr[i+1:]...)
-//		} else {
-//			i++
-//		}
-//
-//	}
-//
-//	for _, n := range arr {
-//		fmt.Println(n)
-//	}
-//
-//}
+func main() {
+	n, m := 0, 0 // 行数和列数
+	fmt.Scan(&n, &m)
+	var start, end loc
+	matrix := make([][]byte, n)
+
+	inputs := bufio.NewScanner(os.Stdin)
+	for i := 0; i < n; i++ {
+		matrix[i] = make([]byte, m)
+		inputs.Scan()
+		s := inputs.Text()
+		for j := range s {
+			matrix[i][j] = s[j]
+			if matrix[i][j] == '2' {
+				start.x = j
+				start.y = i
+			} else if matrix[i][j] == '3' {
+				end.x = j
+				end.y = i
+			}
+		}
+	}
+
+	key := map[byte]bool{}
+	distance := make([][]int, n)
+	for i := range distance {
+		distance[i] = make([]int, m)
+		for j := range distance[i] {
+			distance[i][j] = -1
+		}
+	}
+
+	bfs(start, end, matrix, key, distance, 0)
+
+	fmt.Println(distance[end.y][end.x])
+
+}
