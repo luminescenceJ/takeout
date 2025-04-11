@@ -16,7 +16,7 @@ datasource:
   config: charset=utf8mb4&parseTime=True&loc=Local
 
 log:
-  level: debug
+  level: error
   filepath: ./logger/systemLog.txt
 
 jwt:

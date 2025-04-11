@@ -24,6 +24,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"takeout/global"
@@ -32,10 +33,7 @@ import (
 )
 
 func main() {
-	// todo : 布隆过滤器防穿透
-	// todo : docker部署
-	// todo : 缓存删除策略
-	// todo : 压力测试
+
 	router := initialize.GlobalInit()
 	gin.SetMode(global.Config.Server.Level)
 	fmt.Println("[SERVER] runs on http://localhost:8080")
@@ -49,6 +47,14 @@ func main() {
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("an error occurred while running the server: %s\n", err)
+		}
+	}()
+
+	// 启动 pprof 监听
+	go func() {
+		log.Println("[PPROF] Running on http://localhost:6060/debug/pprof/")
+		if err := http.ListenAndServe("localhost:6060", nil); err != nil {
+			log.Fatalf("failed to start pprof server: %s\n", err)
 		}
 	}()
 
