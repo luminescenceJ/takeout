@@ -18,6 +18,12 @@ import (
 // DishCacheKey redis key 菜品缓存key
 const DishCacheKey = "dishCache::"
 
+var bf *utils.RedisBloom
+
+func init() {
+	bf = utils.NewRedisBloomFilter(DishCacheKey)
+}
+
 type IDishService interface {
 	AddDishWithFlavors(ctx context.Context, dto request.DishDTO) error
 	PageQuery(ctx context.Context, dto *request.DishPageQueryDTO) (*common.PageResult, error)
@@ -84,6 +90,8 @@ func (d DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.Dis
 
 	// 清理缓存
 	utils.CleanCache(DishCacheKey + "*")
+	// 添加布隆过滤器
+	_ = bf.AddDish(strconv.FormatUint(dto.Id, 10))
 	global.Log.Info("Cache cleared for dish data")
 
 	return nil
@@ -139,6 +147,7 @@ func (d DishServiceImpl) List(ctx context.Context, categoryId uint64) ([]respons
 
 	// 查询 Redis 缓存
 	cacheData, err = global.RedisClient.Get(DishCacheKey + strconv.Itoa(int(categoryId))).Result()
+
 	if err == nil {
 		global.Log.Info("Redis cache hit for dishes", "categoryId", categoryId)
 		if err = json.Unmarshal([]byte(cacheData), &dishList); err == nil {
@@ -148,6 +157,12 @@ func (d DishServiceImpl) List(ctx context.Context, categoryId uint64) ([]respons
 		}
 	} else {
 		global.Log.Info("Cache miss for dishes", "categoryId", categoryId)
+		// 布隆过滤器
+		has, _ := bf.HasDish(strconv.FormatUint(categoryId, 10))
+		if !has {
+			global.Log.Info("Bad Request,No Data in Mysql")
+			return make([]response.DishListVo, 0), nil
+		}
 	}
 
 	// 查询数据库
@@ -184,6 +199,8 @@ func (d DishServiceImpl) List(ctx context.Context, categoryId uint64) ([]respons
 			global.Log.Info("Successfully cached dishes in Redis", "categoryId", categoryId)
 		}
 	}
+
+	_ = bf.AddDish(strconv.FormatUint(categoryId, 10))
 
 	return dishList, nil
 }
@@ -237,6 +254,8 @@ func (d DishServiceImpl) Update(ctx context.Context, dto request.DishUpdateDTO) 
 		return err // 这里会直接返回错误，defer 中的回滚会执行一次
 	}
 	utils.CleanCache(DishCacheKey + "*")
+	// 添加布隆过滤器
+	_ = bf.AddDish(strconv.FormatUint(dto.Id, 10))
 	return nil
 }
 
