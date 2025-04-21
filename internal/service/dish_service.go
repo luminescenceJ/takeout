@@ -193,6 +193,7 @@ func (d DishServiceImpl) List(ctx context.Context, categoryId uint64) ([]respons
 
 	// 设置 Redis 缓存
 	if dishVoJSON, err := json.Marshal(dishList); err == nil {
+		//global.RedisClient.HSet()
 		if err = global.RedisClient.Set(DishCacheKey+strconv.Itoa(int(categoryId)), dishVoJSON, 0).Err(); err != nil {
 			global.Log.Warn("Failed to set Redis cache", "categoryId", categoryId, "error", err)
 		} else {

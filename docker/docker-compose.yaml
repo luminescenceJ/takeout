@@ -5,7 +5,7 @@ services:
     container_name: go-redis
     restart: always
     volumes:
-      - ./redis/data:/data
+      - ./redis/data:/data # 映射到宿主机的./redis/data (docker-compose所在目录)
     command: redis-server --requirepass 123456
     ports:
       - '6379:6379'
